@@ -7,7 +7,7 @@ let pool: pg.Pool | null = null;
 
 function getPool(): pg.Pool {
   if (!pool) {
-    const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:CAPSLOCKoff21%23123@db.hbnsrblknhmxdaogjjeb.supabase.co:5432/postgres';
+    const connectionString = process.env.DATABASE_URL || 'postgresql://postgres.hbnsrblknhmxdaogjjeb:CAPSLOCKoff21%23123@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres';
     pool = new Pool({
       connectionString,
       ssl: { rejectUnauthorized: false },
