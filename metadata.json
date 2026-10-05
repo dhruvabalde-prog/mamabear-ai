@@ -1,0 +1,7 @@
+{
+  "name": "Preschool Partners",
+  "description": "The co-founder command center for launching and operating Maple Bear Canadian School in Subhash Nagar, Kota. Role-based task engines, AI launch wizards, Google Workspace sync, and toddler-tested operational clarity.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
