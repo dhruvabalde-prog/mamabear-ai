@@ -11,6 +11,12 @@ import {
   INITIAL_FACILITY_ZONES 
 } from './data/initialData';
 import { TaskItem, VoiceNudge, ParentInquiry, FacilityZone } from './types';
+import { 
+  fetchInitialDataFromSupabase, 
+  syncTaskToSupabase, 
+  syncInquiryToSupabase, 
+  syncNudgeToSupabase 
+} from './services/supabaseService';
 
 import { Navbar } from './components/Navbar';
 import { LockedFooter } from './components/LockedFooter';
@@ -30,6 +36,7 @@ export default function App() {
   // Full-page task viewing (No dialog boxes - full pager!)
   const [viewingTask, setViewingTask] = useState<TaskItem | null>(null);
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
+  const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
 
   // Core Data State with localStorage caching
   const [tasks, setTasks] = useState<TaskItem[]>(() => {
@@ -49,6 +56,19 @@ export default function App() {
   // Google Workspace Auth State
   const [googleUser, setGoogleUser] = useState<User | null>(null);
   const [hasGoogleToken, setHasGoogleToken] = useState<boolean>(false);
+
+  // Fetch initial state from Supabase
+  useEffect(() => {
+    fetchInitialDataFromSupabase().then(data => {
+      if (data) {
+        if (data.tasks && data.tasks.length > 0) setTasks(data.tasks);
+        if (data.inquiries && data.inquiries.length > 0) setInquiries(data.inquiries);
+        if (data.facilityZones && data.facilityZones.length > 0) setFacilityZones(data.facilityZones);
+        if (data.nudges && data.nudges.length > 0) setNudges(data.nudges);
+        setIsSupabaseConnected(true);
+      }
+    });
+  }, []);
 
   // Initialize Auth Listener on Mount
   useEffect(() => {
@@ -88,12 +108,15 @@ export default function App() {
     if (viewingTask && viewingTask.id === updatedTask.id) {
       setViewingTask(updatedTask);
     }
+    syncTaskToSupabase(updatedTask);
   };
 
   const handleToggleTaskStatus = (taskId: string) => {
     setTasks(prev => prev.map(t => {
       if (t.id === taskId) {
-        return { ...t, status: t.status === 'completed' ? 'pending' : 'completed' };
+        const updated = { ...t, status: (t.status === 'completed' ? 'pending' : 'completed') as TaskItem['status'] };
+        syncTaskToSupabase(updated);
+        return updated;
       }
       return t;
     }));
@@ -101,10 +124,12 @@ export default function App() {
 
   const handleSendNudge = (nudge: VoiceNudge) => {
     setNudges(prev => [nudge, ...prev]);
+    syncNudgeToSupabase(nudge);
   };
 
   const handleAddInquiry = (inquiry: ParentInquiry) => {
     setInquiries(prev => [inquiry, ...prev]);
+    syncInquiryToSupabase(inquiry);
   };
 
   const handleUpdateInquiryStatus = (id: string, status: ParentInquiry['status']) => {
@@ -124,6 +149,7 @@ export default function App() {
         }}
         googleUser={googleUser}
         hasGoogleToken={hasGoogleToken}
+        isSupabaseConnected={isSupabaseConnected}
         onOpenGoogleSettings={() => {
           setViewingTask(null);
           setShowGooglePortal(true);

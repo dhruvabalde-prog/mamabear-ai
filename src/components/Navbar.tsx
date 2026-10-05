@@ -9,6 +9,7 @@ interface NavbarProps {
   onSelectTab: (tab: string) => void;
   googleUser: User | null;
   hasGoogleToken: boolean;
+  isSupabaseConnected?: boolean;
   onOpenGoogleSettings: () => void;
   onAuthSuccess: (user: User, token: string | null) => void;
   onAuthLogout: () => void;
@@ -19,6 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectTab,
   googleUser,
   hasGoogleToken,
+  isSupabaseConnected,
   onOpenGoogleSettings,
   onAuthSuccess,
   onAuthLogout
@@ -47,9 +49,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </button>
 
-        {/* Right Side: Clean Gmail Icon Button for OAuth & Settings */}
+        {/* Right Side: Supabase & Gmail Auth Status */}
         <div className="flex items-center gap-2">
           
+          {/* Supabase Status Pill */}
+          <div 
+            className={`px-2.5 py-1.5 rounded-2xl border text-xs font-semibold flex items-center gap-1.5 shadow-2xs ${
+              isSupabaseConnected 
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
+                : 'bg-slate-50 border-slate-200 text-slate-500'
+            }`}
+            title={isSupabaseConnected ? 'Connected to Supabase PostgreSQL (Subhash Nagar, Kota dataset active)' : 'Connecting to Supabase...'}
+          >
+            <span className={`w-2 h-2 rounded-full ${isSupabaseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
+            <span className="hidden sm:inline">Supabase</span>
+          </div>
+
           {/* Gmail / Google Workspace Auth Button */}
           <button
             type="button"

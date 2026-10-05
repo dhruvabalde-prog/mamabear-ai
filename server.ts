@@ -234,6 +234,17 @@ Output JSON format:
     }
   });
 
+  // Supabase Data Endpoint
+  app.all('/api/data', async (req, res) => {
+    try {
+      const { default: handler } = await import('./api/data');
+      await handler(req as any, res as any);
+    } catch (e: any) {
+      console.error('Error handling /api/data:', e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   // Vite middleware in dev or static files in prod
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'dist')));
