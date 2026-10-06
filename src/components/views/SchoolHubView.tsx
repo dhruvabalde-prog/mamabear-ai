@@ -17,7 +17,6 @@ import { FinanceView } from './FinanceView';
 import { StaffView } from './StaffView';
 import { KotaHubView } from './KotaHubView';
 import { GoogleSettingsView } from './GoogleSettingsView';
-import { INITIAL_INQUIRIES, INITIAL_FACILITY_ZONES } from '../../data/initialData';
 
 interface SchoolHubViewProps {
   activeFounder: ActiveFounderRole;
@@ -50,10 +49,10 @@ interface SchoolHubViewProps {
 export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
   activeFounder,
   initialSubSection,
-  inquiries = INITIAL_INQUIRIES,
+  inquiries = [],
   onAddInquiry = () => {},
   onUpdateInquiryStatus = () => {},
-  facilityZones = INITIAL_FACILITY_ZONES,
+  facilityZones = [],
   onUpdateZoneProgress,
   setupConfig,
   staff = [],
