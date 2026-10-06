@@ -8,18 +8,22 @@ import {
   CO_FOUNDERS, 
   INITIAL_NUDGES, 
   INITIAL_INQUIRIES, 
-  INITIAL_FACILITY_ZONES 
+  INITIAL_FACILITY_ZONES,
+  DEFAULT_SETUP_CONFIG,
+  getCoFounders
 } from './data/initialData';
-import { TaskItem, VoiceNudge, ParentInquiry, FacilityZone } from './types';
+import { TaskItem, VoiceNudge, ParentInquiry, FacilityZone, SetupConfig } from './types';
 import { 
   fetchInitialDataFromSupabase, 
   syncTaskToSupabase, 
   syncInquiryToSupabase, 
-  syncNudgeToSupabase 
+  syncNudgeToSupabase,
+  syncSetupToSupabase
 } from './services/supabaseService';
 
 import { Navbar } from './components/Navbar';
 import { LockedFooter } from './components/LockedFooter';
+import { SetupWizard } from './components/SetupWizard';
 
 import { DashboardView } from './components/views/DashboardView';
 import { TaskBoardView } from './components/views/TaskBoardView';
@@ -36,7 +40,19 @@ export default function App() {
   // Full-page task viewing (No dialog boxes - full pager!)
   const [viewingTask, setViewingTask] = useState<TaskItem | null>(null);
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
+  const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
+
+  // Setup / School Configuration State
+  const [setupConfig, setSetupConfig] = useState<SetupConfig | null>(() => {
+    try {
+      const saved = localStorage.getItem('mb_setup_config');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      // ignore
+    }
+    return DEFAULT_SETUP_CONFIG;
+  });
 
   // Core Data State with localStorage caching
   const [tasks, setTasks] = useState<TaskItem[]>(() => {
@@ -65,6 +81,12 @@ export default function App() {
         if (data.inquiries && data.inquiries.length > 0) setInquiries(data.inquiries);
         if (data.facilityZones && data.facilityZones.length > 0) setFacilityZones(data.facilityZones);
         if (data.nudges && data.nudges.length > 0) setNudges(data.nudges);
+        if (data.setupConfig) {
+          setSetupConfig(data.setupConfig);
+          try {
+            localStorage.setItem('mb_setup_config', JSON.stringify(data.setupConfig));
+          } catch (e) {}
+        }
         setIsSupabaseConnected(true);
       }
     });
@@ -132,8 +154,13 @@ export default function App() {
     syncInquiryToSupabase(inquiry);
   };
 
-  const handleUpdateInquiryStatus = (id: string, status: ParentInquiry['status']) => {
-    setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
+  const handleSaveSetup = (newConfig: SetupConfig) => {
+    setSetupConfig(newConfig);
+    setShowSetupModal(false);
+    try {
+      localStorage.setItem('mb_setup_config', JSON.stringify(newConfig));
+    } catch (e) {}
+    syncSetupToSupabase(newConfig);
   };
 
   return (
@@ -145,14 +172,22 @@ export default function App() {
         onSelectTab={(tab) => {
           setViewingTask(null);
           setShowGooglePortal(false);
+          setShowSetupModal(false);
           setCurrentTab(tab);
         }}
         googleUser={googleUser}
         hasGoogleToken={hasGoogleToken}
         isSupabaseConnected={isSupabaseConnected}
+        setupConfig={setupConfig}
         onOpenGoogleSettings={() => {
           setViewingTask(null);
+          setShowSetupModal(false);
           setShowGooglePortal(true);
+        }}
+        onOpenSetup={() => {
+          setViewingTask(null);
+          setShowGooglePortal(false);
+          setShowSetupModal(true);
         }}
         onAuthSuccess={(user, token) => {
           setGoogleUser(user);
@@ -166,8 +201,14 @@ export default function App() {
 
       {/* Main View Area */}
       <main className="flex-1 w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-6">
-        {/* Dedicated Google Workspace & Gmail Portal */}
-        {showGooglePortal ? (
+        {/* Dedicated Setup & School Rules Wizard */}
+        {showSetupModal ? (
+          <SetupWizard
+            initialConfig={setupConfig}
+            onSaveConfig={handleSaveSetup}
+            onCancel={() => setShowSetupModal(false)}
+          />
+        ) : showGooglePortal ? (
           <GoogleSettingsView
             user={googleUser}
             hasToken={hasGoogleToken}
@@ -194,6 +235,7 @@ export default function App() {
             {currentTab === 'dashboard' && (
               <DashboardView
                 tasks={tasks}
+                setupConfig={setupConfig}
                 onOpenTaskModal={handleOpenTaskDetail}
                 onToggleTask={handleToggleTaskStatus}
                 onNavigateTab={(tab) => {

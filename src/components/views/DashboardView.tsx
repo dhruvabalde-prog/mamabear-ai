@@ -8,8 +8,11 @@ import { TaskItem } from '../../types';
 import { INITIAL_EXPENSES } from '../../data/initialData';
 import { getAgenticPriorityNow, buildWhatsAppUrl, ClarifyingQuestion } from '../../services/agentTools';
 
+import { SetupConfig } from '../../types';
+
 interface DashboardViewProps {
   tasks: TaskItem[];
+  setupConfig?: SetupConfig | null;
   onOpenTaskModal?: (task: TaskItem) => void;
   onOpenTask?: (task: TaskItem) => void;
   onToggleTask?: (taskId: string) => void;
@@ -23,6 +26,7 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   tasks,
+  setupConfig,
   onOpenTaskModal,
   onOpenTask,
   onToggleTask,
@@ -64,8 +68,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   // Agentic Priority & Clarifying Questions Engine
-  const agenticData = getAgenticPriorityNow('academics');
+  const agenticData = getAgenticPriorityNow('academics', setupConfig);
   const [answeredQuestions, setAnsweredQuestions] = useState<Record<string, { answer: string; feedback?: any; loading?: boolean }>>({});
+
 
   // Tasks statistics across all 400 items
   const totalTasks = tasks.length;

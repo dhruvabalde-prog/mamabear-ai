@@ -1,8 +1,9 @@
 import React from 'react';
 import { 
-  MapPin, Mail, Settings, User as UserIcon, LogOut
+  MapPin, Mail, Settings, User as UserIcon, LogOut, Sliders
 } from 'lucide-react';
 import { User } from 'firebase/auth';
+import { SetupConfig } from '../types';
 
 interface NavbarProps {
   currentTab: string;
@@ -10,7 +11,9 @@ interface NavbarProps {
   googleUser: User | null;
   hasGoogleToken: boolean;
   isSupabaseConnected?: boolean;
+  setupConfig?: SetupConfig | null;
   onOpenGoogleSettings: () => void;
+  onOpenSetup?: () => void;
   onAuthSuccess: (user: User, token: string | null) => void;
   onAuthLogout: () => void;
 }
@@ -21,15 +24,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   googleUser,
   hasGoogleToken,
   isSupabaseConnected,
+  setupConfig,
   onOpenGoogleSettings,
+  onOpenSetup,
   onAuthSuccess,
   onAuthLogout
 }) => {
+  const schoolTitle = setupConfig?.schoolName || 'Maple Bear Canadian School';
+  const campusSub = setupConfig?.campusLocation 
+    ? `${setupConfig.campusLocation}${setupConfig.city ? ', ' + setupConfig.city : ''}`
+    : 'Campus Operations';
+
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
       <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
         
-        {/* Brand & Campus (No '15L Signed' tag) */}
+        {/* Brand & Campus */}
         <button 
           type="button"
           onClick={() => onSelectTab('dashboard')}
@@ -40,18 +50,31 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 group-hover:text-rose-600 transition-colors block leading-tight">
-              Maple Bear Kota
+              {schoolTitle}
             </span>
             <p className="text-[11px] text-slate-500 flex items-center gap-1 font-medium">
               <MapPin className="w-3 h-3 text-red-500 shrink-0" />
-              <span>Subhash Nagar</span>
+              <span>{campusSub}</span>
             </p>
           </div>
         </button>
 
-        {/* Right Side: Supabase & Gmail Auth Status */}
+        {/* Right Side: Setup Rules, Supabase & Gmail Auth Status */}
         <div className="flex items-center gap-2">
           
+          {/* Setup / Configuration Button */}
+          {onOpenSetup && (
+            <button
+              type="button"
+              onClick={onOpenSetup}
+              className="p-2 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              title="Configure School Profile & Rules"
+            >
+              <Sliders className="w-4 h-4 text-indigo-600" />
+              <span className="text-xs font-bold hidden sm:inline">Setup</span>
+            </button>
+          )}
+
           {/* Supabase Status Pill */}
           <div 
             className={`px-2.5 py-1.5 rounded-2xl border text-xs font-semibold flex items-center gap-1.5 shadow-2xs ${
@@ -59,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
                 : 'bg-slate-50 border-slate-200 text-slate-500'
             }`}
-            title={isSupabaseConnected ? 'Connected to Supabase PostgreSQL (Subhash Nagar, Kota dataset active)' : 'Connecting to Supabase...'}
+            title={isSupabaseConnected ? 'Connected to Supabase PostgreSQL' : 'Connecting to Supabase...'}
           >
             <span className={`w-2 h-2 rounded-full ${isSupabaseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
             <span className="hidden sm:inline">Supabase</span>

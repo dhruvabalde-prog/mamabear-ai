@@ -112,16 +112,75 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json({ success: true, nudges: formatted });
       }
 
+      if (type === 'setup') {
+        const result = await client.query('SELECT * FROM mb_setup_config ORDER BY created_at DESC LIMIT 1;');
+        if (result.rows.length === 0) {
+          return res.status(200).json({ success: true, setupConfig: null });
+        }
+        const r = result.rows[0];
+        return res.status(200).json({
+          success: true,
+          setupConfig: {
+            id: r.id,
+            schoolName: r.school_name,
+            campusLocation: r.campus_location,
+            city: r.city,
+            state: r.state,
+            franchiseBrand: r.franchise_brand,
+            leadAcademicsName: r.lead_academics_name,
+            leadAcademicsTitle: r.lead_academics_title,
+            leadAcademicsPhone: r.lead_academics_phone,
+            leadAcademicsEmail: r.lead_academics_email,
+            leadBusinessName: r.lead_business_name,
+            leadBusinessTitle: r.lead_business_title,
+            leadBusinessPhone: r.lead_business_phone,
+            leadBusinessEmail: r.lead_business_email,
+            launchDate: r.launch_date,
+            targetEnrollment: Number(r.target_enrollment || 50),
+            totalBudgetAllocated: Number(r.total_budget_allocated || 4500000),
+            signingFeePaid: Number(r.signing_fee_paid || 1500000),
+            isSetupCompleted: Boolean(r.is_setup_completed),
+            setupStep: Number(r.setup_step || 1)
+          }
+        });
+      }
+
       // Default: return all initial datasets together
-      const [tasksRes, inqRes, zonesRes, nudgesRes] = await Promise.all([
+      const [tasksRes, inqRes, zonesRes, nudgesRes, setupRes] = await Promise.all([
         client.query('SELECT * FROM mb_tasks ORDER BY phase_day ASC, id ASC LIMIT 500;'),
         client.query('SELECT * FROM mb_parent_inquiries ORDER BY created_at DESC;'),
         client.query('SELECT * FROM mb_facility_zones ORDER BY id ASC;'),
-        client.query('SELECT * FROM mb_voice_nudges ORDER BY created_at DESC LIMIT 50;')
+        client.query('SELECT * FROM mb_voice_nudges ORDER BY created_at DESC LIMIT 50;'),
+        client.query('SELECT * FROM mb_setup_config ORDER BY created_at DESC LIMIT 1;')
       ]);
+
+      const setupRow = setupRes.rows[0] || null;
+      const formattedSetup = setupRow ? {
+        id: setupRow.id,
+        schoolName: setupRow.school_name,
+        campusLocation: setupRow.campus_location,
+        city: setupRow.city,
+        state: setupRow.state,
+        franchiseBrand: setupRow.franchise_brand,
+        leadAcademicsName: setupRow.lead_academics_name,
+        leadAcademicsTitle: setupRow.lead_academics_title,
+        leadAcademicsPhone: setupRow.lead_academics_phone,
+        leadAcademicsEmail: setupRow.lead_academics_email,
+        leadBusinessName: setupRow.lead_business_name,
+        leadBusinessTitle: setupRow.lead_business_title,
+        leadBusinessPhone: setupRow.lead_business_phone,
+        leadBusinessEmail: setupRow.lead_business_email,
+        launchDate: setupRow.launch_date,
+        targetEnrollment: Number(setupRow.target_enrollment || 50),
+        totalBudgetAllocated: Number(setupRow.total_budget_allocated || 4500000),
+        signingFeePaid: Number(setupRow.signing_fee_paid || 1500000),
+        isSetupCompleted: Boolean(setupRow.is_setup_completed),
+        setupStep: Number(setupRow.setup_step || 1)
+      } : null;
 
       return res.status(200).json({
         success: true,
+        setupConfig: formattedSetup,
         tasks: tasksRes.rows.map(r => ({
           id: r.id,
           title: r.title,
@@ -263,6 +322,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           n.audioPlayed || false
         ]);
         return res.status(200).json({ success: true, message: 'Nudge recorded' });
+      }
+
+      if (action === 'save-setup') {
+        const s = payload;
+        const setupId = s.id || 'default-school-config';
+        await client.query(`
+          INSERT INTO mb_setup_config (
+            id, school_name, campus_location, city, state, franchise_brand,
+            lead_academics_name, lead_academics_title, lead_academics_phone, lead_academics_email,
+            lead_business_name, lead_business_title, lead_business_phone, lead_business_email,
+            launch_date, target_enrollment, total_budget_allocated, signing_fee_paid,
+            is_setup_completed, setup_step, updated_at
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, NOW()
+          ) ON CONFLICT (id) DO UPDATE SET
+            school_name = EXCLUDED.school_name,
+            campus_location = EXCLUDED.campus_location,
+            city = EXCLUDED.city,
+            state = EXCLUDED.state,
+            franchise_brand = EXCLUDED.franchise_brand,
+            lead_academics_name = EXCLUDED.lead_academics_name,
+            lead_academics_title = EXCLUDED.lead_academics_title,
+            lead_academics_phone = EXCLUDED.lead_academics_phone,
+            lead_academics_email = EXCLUDED.lead_academics_email,
+            lead_business_name = EXCLUDED.lead_business_name,
+            lead_business_title = EXCLUDED.lead_business_title,
+            lead_business_phone = EXCLUDED.lead_business_phone,
+            lead_business_email = EXCLUDED.lead_business_email,
+            launch_date = EXCLUDED.launch_date,
+            target_enrollment = EXCLUDED.target_enrollment,
+            total_budget_allocated = EXCLUDED.total_budget_allocated,
+            signing_fee_paid = EXCLUDED.signing_fee_paid,
+            is_setup_completed = EXCLUDED.is_setup_completed,
+            setup_step = EXCLUDED.setup_step,
+            updated_at = NOW();
+        `, [
+          setupId,
+          s.schoolName || '',
+          s.campusLocation || '',
+          s.city || '',
+          s.state || '',
+          s.franchiseBrand || '',
+          s.leadAcademicsName || '',
+          s.leadAcademicsTitle || 'Academic Director',
+          s.leadAcademicsPhone || '',
+          s.leadAcademicsEmail || '',
+          s.leadBusinessName || '',
+          s.leadBusinessTitle || 'Managing Director',
+          s.leadBusinessPhone || '',
+          s.leadBusinessEmail || '',
+          s.launchDate || '',
+          s.targetEnrollment || 50,
+          s.totalBudgetAllocated || 4500000,
+          s.signingFeePaid || 1500000,
+          s.isSetupCompleted !== undefined ? s.isSetupCompleted : true,
+          s.setupStep || 4
+        ]);
+        return res.status(200).json({ success: true, message: 'School setup configuration saved to Supabase' });
       }
 
       return res.status(400).json({ error: 'Unknown action' });

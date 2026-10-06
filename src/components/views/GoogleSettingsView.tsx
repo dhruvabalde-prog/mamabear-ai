@@ -42,21 +42,20 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
   const [activeTab, setActiveTab] = useState<'gmail' | 'calendar' | 'tasks' | 'drive'>('gmail');
   
   // Custom Gmail input field
-  const [gmailInput, setGmailInput] = useState<string>(user?.email || 'priya@maplebear-kota.in');
+  const [gmailInput, setGmailInput] = useState<string>(user?.email || '');
   
-  // Additional Work & Family Accounts
-  const [workEmails, setWorkEmails] = useState([
-    { email: 'priya@maplebear-kota.in', role: 'Co-Founder (Academics)', status: 'Connected' },
-    { email: 'ananya@maplebear-kota.in', role: 'Co-Founder (Business)', status: 'Auto-Shared' }
-  ]);
+  // Additional Work & Team Accounts
+  const [workEmails, setWorkEmails] = useState<{ email: string; role: string; status: string }[]>(() => {
+    return user?.email ? [
+      { email: user.email, role: 'Primary Founder', status: 'Connected' }
+    ] : [];
+  });
   const [newWorkEmail, setNewWorkEmail] = useState('');
   const [showAddWorkEmail, setShowAddWorkEmail] = useState(false);
 
-  // Husband Integrations (4-way family collaboration)
-  const [familyIntegrations, setFamilyIntegrations] = useState([
-    { name: 'Rohan Sharma', role: "Priya's Husband", email: 'rohan.sharma@gmail.com', connected: true },
-    { name: 'Gaurav Verma', role: "Ananya's Husband", email: 'gaurav.verma@gmail.com', connected: true }
-  ]);
+  // Partner & Family Integrations
+  const [familyIntegrations, setFamilyIntegrations] = useState<{ name: string; role: string; email: string; connected: boolean }[]>([]);
+
 
   // Admin panel state
   const [showAdminPanel, setShowAdminPanel] = useState(false);

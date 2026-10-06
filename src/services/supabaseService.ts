@@ -1,10 +1,11 @@
-import { TaskItem, ParentInquiry, FacilityZone, VoiceNudge } from '../types';
+import { TaskItem, ParentInquiry, FacilityZone, VoiceNudge, SetupConfig } from '../types';
 
 export interface SupabaseInitialData {
   tasks: TaskItem[];
   inquiries: ParentInquiry[];
   facilityZones: FacilityZone[];
   nudges: VoiceNudge[];
+  setupConfig?: SetupConfig | null;
 }
 
 export async function fetchInitialDataFromSupabase(): Promise<SupabaseInitialData | null> {
@@ -15,12 +16,13 @@ export async function fetchInitialDataFromSupabase(): Promise<SupabaseInitialDat
       return null;
     }
     const data = await res.json();
-    if (data.success && data.tasks && data.tasks.length > 0) {
+    if (data.success && (data.tasks || data.setupConfig)) {
       return {
-        tasks: data.tasks,
+        tasks: data.tasks || [],
         inquiries: data.inquiries || [],
         facilityZones: data.facilityZones || [],
-        nudges: data.nudges || []
+        nudges: data.nudges || [],
+        setupConfig: data.setupConfig || null
       };
     }
     return null;
@@ -101,3 +103,21 @@ export async function syncNudgeToSupabase(nudge: VoiceNudge): Promise<boolean> {
     return false;
   }
 }
+
+export async function syncSetupToSupabase(setup: SetupConfig): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'save-setup',
+        payload: setup
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync setup config to Supabase:', err);
+    return false;
+  }
+}
+

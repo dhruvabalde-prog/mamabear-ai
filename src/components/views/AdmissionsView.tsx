@@ -466,7 +466,7 @@ When would be a convenient time for you to visit this week?`;
                   <input
                     type="text"
                     required
-                    placeholder="+91 98290 12345"
+                    placeholder="Enter 10-digit mobile number"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500"
@@ -476,7 +476,7 @@ When would be a convenient time for you to visit this week?`;
                   <label className="font-bold text-slate-700 block mb-1">Email</label>
                   <input
                     type="email"
-                    placeholder="parent@gmail.com"
+                    placeholder="parent@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500"
@@ -489,7 +489,7 @@ When would be a convenient time for you to visit this week?`;
                   <label className="font-bold text-slate-700 block mb-1">Child Name</label>
                   <input
                     type="text"
-                    placeholder="e.g. Aarav / Myra"
+                    placeholder="Child full name"
                     value={formData.childName}
                     onChange={(e) => setFormData({ ...formData, childName: e.target.value })}
                     className="w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500"

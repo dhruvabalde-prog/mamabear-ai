@@ -12,7 +12,7 @@ export interface TaskItem {
   estimatedDays: number;
   priority: 'high' | 'medium' | 'low';
   status: 'pending' | 'in_progress' | 'completed';
-  assignedTo: 'Priya (Academics)' | 'Ananya (Business)' | 'Both Co-founders';
+  assignedTo: string;
   phaseDay: number; // 1 to 60 for launch roadmap
   tags: string[];
   department: string;
@@ -100,7 +100,7 @@ export interface FacilityZone {
   toddlerSafetyRating: number; // 1 to 5
   budgetAllocated: number;
   budgetSpent: number;
-  lead: 'Ananya' | 'Priya';
+  lead: string;
 }
 
 export interface StaffMember {
@@ -123,5 +123,33 @@ export interface ExpenseItem {
   paidDate: string;
   status: 'Paid' | 'Advance Done' | 'Scheduled';
   vendor: string;
-  authorizedBy: 'Priya' | 'Ananya' | 'Joint';
+  authorizedBy: string;
 }
+
+export interface SetupConfig {
+  id?: string;
+  schoolName: string;
+  campusLocation: string;
+  city: string;
+  state: string;
+  franchiseBrand: string;
+  leadAcademicsName: string;
+  leadAcademicsTitle: string;
+  leadAcademicsPhone: string;
+  leadAcademicsEmail: string;
+  leadAcademicsChildName?: string;
+  leadAcademicsChildAge?: string;
+  leadBusinessName: string;
+  leadBusinessTitle: string;
+  leadBusinessPhone: string;
+  leadBusinessEmail: string;
+  leadBusinessChildName?: string;
+  leadBusinessChildAge?: string;
+  launchDate: string;
+  targetEnrollment: number;
+  totalBudgetAllocated: number;
+  signingFeePaid: number;
+  isSetupCompleted: boolean;
+  setupStep: number;
+}
+

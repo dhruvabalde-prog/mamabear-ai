@@ -40,7 +40,7 @@ export interface ClarifyingQuestion {
  * - Current Local Time & 3yo Toddler Routine (Aarav & Myra)
  * - 60-day launch countdown milestones
  */
-export function getAgenticPriorityNow(role: ActiveFounderRole): {
+export function getAgenticPriorityNow(role: ActiveFounderRole, config?: any): {
   currentPhase: string;
   routineStatus: string;
   primaryAction: AgenticActionRecommendation;
@@ -48,138 +48,148 @@ export function getAgenticPriorityNow(role: ActiveFounderRole): {
   clarifyingQuestions: ClarifyingQuestion[];
 } {
   const hour = new Date().getHours();
+  const schoolName = config?.schoolName || 'Maple Bear Canadian School';
+  const campus = config?.campusLocation || 'Subhash Nagar';
+  const city = config?.city || 'Kota';
+  
+  const acadName = config?.leadAcademicsName || 'Academic Director';
+  const acadTitle = config?.leadAcademicsTitle || 'Academic Director';
+  const acadChild = config?.leadAcademicsChildName || 'Child';
+  const acadPhone = config?.leadAcademicsPhone || '';
+
+  const bizName = config?.leadBusinessName || 'Managing Director';
+  const bizTitle = config?.leadBusinessTitle || 'Managing Director';
+  const bizPhone = config?.leadBusinessPhone || '';
 
   if (role === 'academics') {
-    // Priya Sharma - Academics & Care (Mom to Aarav, 3yo)
     const isNapTime = hour >= 13 && hour <= 15;
     
     return {
       currentPhase: isNapTime ? 'Toddler Nap Window (Deep Work)' : 'Active Operations & Classroom Setup',
       routineStatus: isNapTime 
-        ? 'Aarav is sleeping (1:30 PM - 3:15 PM) • 75 mins uninterrupted focus available'
-        : 'Aarav is active • Ideal for sensory materials testing & teacher demonstration observations',
+        ? `${acadChild} is resting • Focused work & curriculum review window available`
+        : `${acadChild} is active • Ideal for classroom materials testing & educator demonstrations`,
       primaryAction: {
-        id: 'act-priya-1',
+        id: 'act-acad-1',
         urgentLevel: 'immediate',
         category: 'Parent Outreach',
-        title: 'Reply to Dr. Radhika Mehta regarding Friday 10:00 AM Nursery Tour',
-        rationale: 'Dr. Mehta is HOD Cardiology with 3yo twin boys. Prompt Canadian-standard reply locks in admission.',
-        toddlerContext: 'Aarav will test the Canadian sensory water-table during this time.',
+        title: 'Reply to Parent Inquiry regarding Friday 10:00 AM Nursery Tour',
+        rationale: 'High priority parent booking with 3yo twins. Prompt Canadian-standard reply confirms admission tour.',
+        toddlerContext: 'Classroom sensory materials will be ready during the tour walkthrough.',
         recommendedTool: 'whatsapp',
         actionData: {
           recipientName: 'Dr. Radhika Mehta',
           recipientContact: '919414123456',
-          draftText: 'Dear Dr. Radhika Mehta, Warm greetings from Priya at Maple Bear Canadian School, Subhash Nagar, Kota. We are thrilled to confirm your tour for twins Kabir & Vivaan this Friday at 10:00 AM. As a fellow mother of a 3-year-old boy (Aarav), I look forward to personally walking you through our Canadian bilingual immersion and doctor-approved sanitization protocols! See you Friday.',
+          draftText: `Dear Dr. Radhika Mehta, Warm greetings from ${acadName} at ${schoolName}, ${campus}, ${city}. We are thrilled to confirm your tour for twins Kabir & Vivaan this Friday at 10:00 AM. As a fellow parent of a young child, I look forward to personally walking you through our bilingual immersion and hygiene-certified protocols! See you Friday.`,
           calendarSummary: 'Tour: Dr. Radhika Mehta (Twins Kabir & Vivaan 3yo)'
         }
       },
       secondaryActions: [
         {
-          id: 'act-priya-2',
+          id: 'act-acad-2',
           urgentLevel: 'high',
           category: 'ECE & Academics',
-          title: 'Review Canadian Sound-Box phonics curriculum for Junior KG',
-          rationale: 'Mandatory Canadian franchise pedagogy standard before teacher training starts on Day 14.',
-          toddlerContext: 'Child-friendly task; Aarav can explore sound-boxes as real-world tester.',
+          title: 'Review Sound-Box phonics curriculum for Junior KG',
+          rationale: 'Mandatory bilingual franchise pedagogy standard before teacher training starts on Day 14.',
+          toddlerContext: 'Child-friendly task; early phonological exploration ready.',
           recommendedTool: 'task_plan',
           actionData: {
             taskTitle: 'Structure Junior KG early phonological awareness sound-boxes'
           }
         },
         {
-          id: 'act-priya-3',
+          id: 'act-acad-3',
           urgentLevel: 'normal',
           category: 'Franchise & NOC',
           title: 'Send formal Offer Letter to Lead Educator candidate Sunita Rathore',
-          rationale: 'She passed the mock storytelling audition with 5 stars; competitive offer needed today.',
+          rationale: 'Candidate passed the mock storytelling audition with distinction; competitive offer required today.',
           toddlerContext: 'Drafting can be done in 10 minutes.',
           recommendedTool: 'gmail',
           actionData: {
             recipientName: 'Sunita Rathore',
             recipientContact: 'sunita.rathore@gmail.com',
-            draftText: 'Dear Sunita ji,\n\nWe are delighted to extend an offer for the Lead Educator position at Maple Bear Canadian Pre-School, Subhash Nagar, Kota. We were inspired by your warmth and Canadian storytelling demo. Attached are the terms and Canadian pedagogy orientation schedule.\n\nWarmly,\nPriya Sharma (Academic Director)'
+            draftText: `Dear Sunita ji,\n\nWe are delighted to extend an offer for the Lead Educator position at ${schoolName}, ${campus}, ${city}. We were inspired by your warmth and storytelling demo. Attached are the terms and pedagogy orientation schedule.\n\nWarmly,\n${acadName} (${acadTitle})`
           }
         }
       ],
       clarifyingQuestions: [
         {
           id: 'cq-p1',
-          question: 'Did the shipment of 150 Canadian picture books arrive from Maple Bear Mumbai hub?',
-          context: 'Crucial for setting up the Central Reading Nook in Zone 2 before parent tours start.',
-          options: ['Yes, boxes received at Subhash Nagar', 'Delayed by 2 days in transit', 'Need to check with courier tracker'],
-          fieldKey: 'canadian_books_received'
+          question: `Did the shipment of 150 early learning picture books arrive from the national hub?`,
+          context: `Crucial for setting up the Central Reading Nook in Zone 2 before parent tours start.`,
+          options: [`Yes, boxes received at ${campus}`, 'Delayed by 2 days in transit', 'Need to check with courier tracker'],
+          fieldKey: 'books_received'
         },
         {
           id: 'cq-p2',
           question: 'Should we schedule the 5-day Teacher Pedagogy Workshop for morning or evening batches?',
-          context: 'Morning batches (9 AM - 1 PM) allow hands-on classroom rehearsal before Kota heat peaks.',
+          context: 'Morning batches (9 AM - 1 PM) allow hands-on classroom rehearsal before local afternoon heat.',
           options: ['Morning 9:00 AM - 1:00 PM', 'Afternoon 2:00 PM - 6:00 PM', 'Split into 2 Weekend Intensives'],
           fieldKey: 'teacher_training_timing'
         }
       ]
     };
   } else {
-    // Ananya Verma - Business & Operations (Mom to Myra, 3yo)
     return {
       currentPhase: 'Site Supervision & Vendor Procurement',
-      routineStatus: 'Myra is at grandparents for 2 hours • High mobility window for Kota Municipal & site meetings',
+      routineStatus: 'Operations window • High mobility window for municipal clearances & site inspections',
       primaryAction: {
-        id: 'act-ananya-1',
+        id: 'act-biz-1',
         urgentLevel: 'immediate',
         category: 'Facility & Civil',
-        title: 'Confirm Hadoti Crafts mirror polish finish in Kindergarten Discovery Hub',
+        title: 'Confirm non-slip stone mirror polish finish in Kindergarten Discovery Hub',
         rationale: 'Zone 4 civil work is at 60%. Sealing must dry 48 hours before furniture installation.',
-        toddlerContext: 'Safety test required: Myra to inspect smooth edges in non-skid socks.',
+        toddlerContext: 'Safety test required: verify smooth corner rounding with non-skid socks.',
         recommendedTool: 'whatsapp',
         actionData: {
-          recipientName: 'Master Craftsman Suresh (Hadoti Constructions)',
+          recipientName: 'Master Craftsman Suresh (Constructions)',
           recipientContact: '919829011223',
-          draftText: 'Namaste Suresh ji, Ananya here from Maple Bear Subhash Nagar. Please confirm if the zero-chemical matte polish in Zone 4 (Kindergarten) will be completed by 4 PM today. We need 48 hours cure time before Canadian shelf installation. Thank you!',
-          taskTitle: 'Kota Stone Mirror Polishing - Zone 4'
+          draftText: `Namaste Suresh ji, ${bizName} here from ${schoolName} ${campus}. Please confirm if the zero-chemical matte polish in Zone 4 (Kindergarten) will be completed by 4 PM today. We need 48 hours cure time before furniture installation. Thank you!`,
+          taskTitle: 'Flooring Polishing - Zone 4'
         }
       },
       secondaryActions: [
         {
-          id: 'act-ananya-2',
+          id: 'act-biz-2',
           urgentLevel: 'high',
           category: 'Franchise & NOC',
-          title: 'Submit Fire NOC inspection dossier to Kota Municipal Corporation',
+          title: `Submit Fire NOC inspection dossier to Municipal Corporation`,
           rationale: 'Mandatory clearance required 30 days prior to school inauguration.',
           toddlerContext: 'Requires 30 min focused documentation filing.',
           recommendedTool: 'gmail',
           actionData: {
-            recipientName: 'Kota Fire Officer Office',
-            recipientContact: 'fire.noc.kota@rajasthan.gov.in',
-            draftText: 'To The Chief Fire Officer, Kota Municipal Corporation.\nSub: Fire Safety NOC Application for Maple Bear Canadian School, Subhash Nagar, Kota.\n\nRespected Sir,\nWe hereby submit the architectural floor plans, emergency dual-exit maps, ABC fire extinguisher certificates, and child-safe sprinkler layouts for our pre-school premises in Subhash Nagar. We request a scheduled inspection.\n\nSincerely,\nAnanya Verma (Managing Director, +91 98290 85678)'
+            recipientName: 'Chief Fire Officer',
+            recipientContact: 'fire.noc@rajasthan.gov.in',
+            draftText: `To The Chief Fire Officer, Municipal Corporation.\nSub: Fire Safety NOC Application for ${schoolName}, ${campus}, ${city}.\n\nRespected Sir,\nWe hereby submit the architectural floor plans, emergency dual-exit maps, fire extinguisher certificates, and child-safe sprinkler layouts for our pre-school premises in ${campus}. We request a scheduled inspection.\n\nSincerely,\n${bizName} (${bizTitle}${bizPhone ? ', ' + bizPhone : ''})`
           }
         },
         {
-          id: 'act-ananya-3',
+          id: 'act-biz-3',
           urgentLevel: 'normal',
           category: 'Parent Outreach',
-          title: 'Send Fee Structure & Day Care Options to Er. Rajesh Khandelwal (Allen Faculty)',
-          rationale: 'He visited campus yesterday and requested day care package details for his 2.5yo daughter Anvi.',
+          title: 'Send Fee Structure & Day Care Options to Er. Rajesh Khandelwal',
+          rationale: 'Visited campus yesterday and requested day care package details for his 2.5yo daughter.',
           toddlerContext: 'Instant 1-tap WhatsApp response ready.',
           recommendedTool: 'whatsapp',
           actionData: {
             recipientName: 'Er. Rajesh Khandelwal',
             recipientContact: '919829298765',
-            draftText: 'Namaste Rajesh ji! Thank you for visiting Maple Bear Subhash Nagar yesterday. Attached is the complete Term 1 fee breakdown for Toddler section along with our 5:30 PM Allen Faculty extended day-care schedule. Please let us know if you would like to secure the Founder Early Bird seat for Anvi! Warmly, Ananya (+91 98290 85678)'
+            draftText: `Namaste Rajesh ji! Thank you for visiting ${schoolName} ${campus} yesterday. Attached is the complete Term 1 fee breakdown for Toddler section along with our extended day-care schedule. Please let us know if you would like to secure the Founder Early Bird seat! Warmly, ${bizName}${bizPhone ? ' (' + bizPhone + ')' : ''}`
           }
         }
       ],
       clarifyingQuestions: [
         {
           id: 'cq-a1',
-          question: 'Did Gumanpura Electronics deliver the 6 Inverter ACs and high-CFM coolers?',
-          context: 'Crucial to test AC temperature distribution in Toddler Room before dry-run sessions.',
+          question: 'Did the electronics vendor deliver the Inverter ACs and high-CFM air circulation units?',
+          context: 'Crucial to test temperature distribution in Toddler Room before dry-run sessions.',
           options: ['Delivered and mounted on wall', 'Delivery scheduled for tomorrow morning', 'Awaiting electrical sub-meter clearance'],
           fieldKey: 'ac_delivery_status'
         },
         {
           id: 'cq-a2',
-          question: 'Are the outdoor UV heat canopies over the splash pool ready for tension testing?',
-          context: 'Canopies protect against harsh Kota midday sunshine during outdoor physical literacy.',
+          question: 'Are the outdoor UV heat canopies over the play area ready for tension testing?',
+          context: 'Canopies protect against midday sunshine during outdoor physical literacy.',
           options: ['Ready for safety pull-test', 'Fabricator stitching final corner grommets', 'Need landlord permission for roof anchor'],
           fieldKey: 'canopy_readiness'
         }

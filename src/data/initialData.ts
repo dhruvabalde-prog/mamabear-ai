@@ -1,35 +1,67 @@
-import { CoFounder, VoiceNudge, ParentInquiry, FacilityZone, StaffMember, ExpenseItem } from '../types';
+import { CoFounder, VoiceNudge, ParentInquiry, FacilityZone, StaffMember, ExpenseItem, SetupConfig } from '../types';
 
-export const CO_FOUNDERS: Record<string, CoFounder> = {
-  academics: {
-    id: 'priya',
-    name: 'Priya Sharma',
-    title: 'Co-Founder & Academic Director',
-    age: 32,
-    childName: 'Aarav',
-    childAge: '3 yrs 1 mo',
-    avatarColor: 'bg-rose-500',
-    role: 'academics',
-    phone: '+91 98290 41234',
-    email: 'priya@maplebear-kota.in',
-    currentStatus: 'Testing sensory water-table in Toddler Room with Aarav',
-    statusIcon: '🎨'
-  },
-  business: {
-    id: 'ananya',
-    name: 'Ananya Verma',
-    title: 'Co-Founder & Managing Director',
-    age: 33,
-    childName: 'Myra',
-    childAge: '3 yrs 3 mo',
-    avatarColor: 'bg-indigo-600',
-    role: 'business',
-    phone: '+91 98290 85678',
-    email: 'ananya@maplebear-kota.in',
-    currentStatus: 'Finalizing Fire NOC clearance at Kota Municipal Office',
-    statusIcon: '🏛️'
-  }
+export const DEFAULT_SETUP_CONFIG: SetupConfig = {
+  schoolName: 'Maple Bear Canadian School',
+  campusLocation: 'Subhash Nagar',
+  city: 'Kota',
+  state: 'Rajasthan',
+  franchiseBrand: 'Maple Bear Global',
+  leadAcademicsName: 'Academic Director',
+  leadAcademicsTitle: 'Co-Founder & Academic Director',
+  leadAcademicsPhone: '',
+  leadAcademicsEmail: '',
+  leadAcademicsChildName: 'Child',
+  leadAcademicsChildAge: '3 yrs',
+  leadBusinessName: 'Managing Director',
+  leadBusinessTitle: 'Co-Founder & Managing Director',
+  leadBusinessPhone: '',
+  leadBusinessEmail: '',
+  leadBusinessChildName: 'Child',
+  leadBusinessChildAge: '3 yrs',
+  launchDate: '2026-11-15',
+  targetEnrollment: 50,
+  totalBudgetAllocated: 4500000,
+  signingFeePaid: 1500000,
+  isSetupCompleted: false,
+  setupStep: 1
 };
+
+export function getCoFounders(config?: SetupConfig | null): Record<string, CoFounder> {
+  const c = config || DEFAULT_SETUP_CONFIG;
+  return {
+    academics: {
+      id: 'academics',
+      name: c.leadAcademicsName || 'Academic Director',
+      title: c.leadAcademicsTitle || 'Co-Founder & Academic Director',
+      age: 32,
+      childName: c.leadAcademicsChildName || 'Child',
+      childAge: c.leadAcademicsChildAge || '3 yrs',
+      avatarColor: 'bg-rose-500',
+      role: 'academics',
+      phone: c.leadAcademicsPhone || '',
+      email: c.leadAcademicsEmail || '',
+      currentStatus: 'Classroom curriculum & sensory setup',
+      statusIcon: '🎨'
+    },
+    business: {
+      id: 'business',
+      name: c.leadBusinessName || 'Managing Director',
+      title: c.leadBusinessTitle || 'Co-Founder & Managing Director',
+      age: 33,
+      childName: c.leadBusinessChildName || 'Child',
+      childAge: c.leadBusinessChildAge || '3 yrs',
+      avatarColor: 'bg-indigo-600',
+      role: 'business',
+      phone: c.leadBusinessPhone || '',
+      email: c.leadBusinessEmail || '',
+      currentStatus: 'Facility inspections & admissions launch',
+      statusIcon: '🏛️'
+    }
+  };
+}
+
+export const CO_FOUNDERS: Record<string, CoFounder> = getCoFounders();
+
 
 export const INITIAL_NUDGES: VoiceNudge[] = [
   {
