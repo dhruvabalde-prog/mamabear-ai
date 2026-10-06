@@ -4,11 +4,8 @@ import {
   MapPin, Baby, Users, ShieldCheck, Building2, 
   ChevronRight, Zap, MessageCircle, Check, Send, User
 } from 'lucide-react';
-import { TaskItem } from '../../types';
-import { INITIAL_EXPENSES } from '../../data/initialData';
+import { TaskItem, SetupConfig } from '../../types';
 import { getAgenticPriorityNow, buildWhatsAppUrl, ClarifyingQuestion } from '../../services/agentTools';
-
-import { SetupConfig } from '../../types';
 
 interface DashboardViewProps {
   tasks: TaskItem[];

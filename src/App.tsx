@@ -17,6 +17,8 @@ import {
   fetchInitialDataFromSupabase, 
   syncTaskToSupabase, 
   syncInquiryToSupabase, 
+  syncInquiryStatusToSupabase,
+  syncZoneProgressToSupabase,
   syncNudgeToSupabase,
   syncSetupToSupabase
 } from './services/supabaseService';
@@ -164,6 +166,22 @@ export default function App() {
   const handleAddInquiry = (inquiry: ParentInquiry) => {
     setInquiries(prev => [inquiry, ...prev]);
     syncInquiryToSupabase(inquiry);
+  };
+
+  const handleUpdateInquiryStatus = (id: string, status: ParentInquiry['status']) => {
+    setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
+    syncInquiryStatusToSupabase(id, status);
+  };
+
+  const handleUpdateZoneProgress = (id: string, progress: number) => {
+    setFacilityZones(prev => prev.map(z => {
+      if (z.id === id) {
+        const status = progress === 100 ? 'Ready for Kids' : progress >= 75 ? 'Furnished' : z.status;
+        syncZoneProgressToSupabase(id, progress, status);
+        return { ...z, progress, status };
+      }
+      return z;
+    }));
   };
 
   const handleSaveSetup = (newConfig: SetupConfig) => {
@@ -337,10 +355,9 @@ export default function App() {
                 activeFounder="academics"
                 inquiries={inquiries}
                 onAddInquiry={handleAddInquiry}
-                onUpdateInquiryStatus={(id, status) => {
-                  setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
-                }}
+                onUpdateInquiryStatus={handleUpdateInquiryStatus}
                 facilityZones={facilityZones}
+                onUpdateZoneProgress={handleUpdateZoneProgress}
                 setupConfig={setupConfig}
                 staff={staff}
                 onAddStaff={handleAddStaff}

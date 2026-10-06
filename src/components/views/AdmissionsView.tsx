@@ -250,7 +250,26 @@ When would be a convenient time for you to visit this week?`;
 
       {/* Inquiries Cards List (Clean, High Whitespace, Mobile First) */}
       <div className="space-y-4">
-        {filteredInquiries.map((inq) => (
+        {filteredInquiries.length === 0 ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-2xs space-y-3">
+            <Users className="w-12 h-12 text-slate-300 mx-auto" />
+            <h3 className="text-base font-extrabold text-slate-900">No Inquiries Found</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              {filterStatus === 'all' 
+                ? 'No parent inquiries logged yet. Click "Add Parent Inquiry" to register your first prospective family.' 
+                : `No inquiries with status "${filterStatus}". Change filter or add a new record.`}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowNewModal(true)}
+              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Parent Inquiry</span>
+            </button>
+          </div>
+        ) : (
+          filteredInquiries.map((inq) => (
           <div
             key={inq.id}
             className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all space-y-4"
@@ -363,7 +382,7 @@ When would be a convenient time for you to visit this week?`;
               </div>
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
       {/* AI Draft Customizer Modal */}

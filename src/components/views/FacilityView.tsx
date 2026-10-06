@@ -106,9 +106,9 @@ export const FacilityView: React.FC<FacilityViewProps> = ({
               </span>
             </div>
 
-            {/* Progress bar */}
-            <div>
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1">
+            {/* Progress bar with interactive updates */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
                 <span>Renovation Progress</span>
                 <span className="font-bold text-slate-900">{zone.progress}%</span>
               </div>
@@ -118,6 +118,25 @@ export const FacilityView: React.FC<FacilityViewProps> = ({
                   style={{ width: `${zone.progress}%` }}
                 ></div>
               </div>
+              {onUpdateZoneProgress && (
+                <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <span className="text-[10px] text-slate-400 font-medium">Update:</span>
+                  {[25, 50, 75, 100].map((pct) => (
+                    <button
+                      key={pct}
+                      type="button"
+                      onClick={() => onUpdateZoneProgress(zone.id, pct)}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                        zone.progress === pct
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                      }`}
+                    >
+                      {pct}%
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Specs & Safety */}

@@ -26,6 +26,7 @@ interface SchoolHubViewProps {
   onAddInquiry?: (inquiry: ParentInquiry) => void;
   onUpdateInquiryStatus?: (id: string, status: ParentInquiry['status']) => void;
   facilityZones?: FacilityZone[];
+  onUpdateZoneProgress?: (id: string, progress: number) => void;
   setupConfig?: SetupConfig | null;
   staff?: StaffMember[];
   onAddStaff?: (member: StaffMember) => void;
@@ -53,6 +54,7 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
   onAddInquiry = () => {},
   onUpdateInquiryStatus = () => {},
   facilityZones = INITIAL_FACILITY_ZONES,
+  onUpdateZoneProgress,
   setupConfig,
   staff = [],
   onAddStaff,
@@ -189,7 +191,10 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
             />
           )}
           {selectedSection === 'facility' && (
-            <FacilityView zones={facilityZones} />
+            <FacilityView 
+              zones={facilityZones} 
+              onUpdateZoneProgress={onUpdateZoneProgress}
+            />
           )}
           {selectedSection === 'academics' && (
             <AcademicsView

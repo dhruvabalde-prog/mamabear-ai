@@ -85,6 +85,23 @@ export async function syncInquiryToSupabase(inquiry: ParentInquiry): Promise<boo
   }
 }
 
+export async function syncInquiryStatusToSupabase(id: string, status: string): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'update-inquiry-status',
+        payload: { id, status }
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync inquiry status to Supabase:', err);
+    return false;
+  }
+}
+
 export async function syncZoneProgressToSupabase(id: string, progress: number, status: string): Promise<boolean> {
   try {
     const res = await fetch('/api/data', {
