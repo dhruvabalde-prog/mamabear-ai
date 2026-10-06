@@ -153,3 +153,42 @@ export interface SetupConfig {
   setupStep: number;
 }
 
+export interface AcademicProgram {
+  id: string;
+  slug: string;
+  name: string;
+  ageBracket: string;
+  icon: string;
+  description: string;
+  learningCenters: string[];
+  weeklyThemes: { week: number; title: string; description?: string }[];
+}
+
+export interface LocalVendor {
+  id: string;
+  name: string;
+  serviceCategory: string;
+  area: string;
+  phone: string;
+  contactPerson: string;
+  status: 'Lead' | 'Quotation Approved' | 'Advance Paid' | 'On Site' | 'Delivered' | 'Completed';
+}
+
+export interface QualityReview {
+  id: string;
+  itemTested: string;
+  tester: string;
+  rating: number;
+  verdict: 'Approved for Campus' | 'Modifications Required' | 'Rejected';
+  comment: string;
+  createdAt?: string;
+}
+
+export interface DailyHandoff {
+  id?: string;
+  date: string;
+  afternoonPickupLead: string;
+  statusNote?: string;
+}
+
+

@@ -68,6 +68,12 @@ export default function App() {
   const [nudges, setNudges] = useState<VoiceNudge[]>(INITIAL_NUDGES);
   const [inquiries, setInquiries] = useState<ParentInquiry[]>(INITIAL_INQUIRIES);
   const [facilityZones, setFacilityZones] = useState<FacilityZone[]>(INITIAL_FACILITY_ZONES);
+  const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
+  const [academicPrograms, setAcademicPrograms] = useState<AcademicProgram[]>([]);
+  const [vendors, setVendors] = useState<LocalVendor[]>([]);
+  const [reviews, setReviews] = useState<QualityReview[]>([]);
+  const [handoff, setHandoff] = useState<DailyHandoff | null>(null);
 
   // Google Workspace Auth State
   const [googleUser, setGoogleUser] = useState<User | null>(null);
@@ -81,6 +87,12 @@ export default function App() {
         if (data.inquiries && data.inquiries.length > 0) setInquiries(data.inquiries);
         if (data.facilityZones && data.facilityZones.length > 0) setFacilityZones(data.facilityZones);
         if (data.nudges && data.nudges.length > 0) setNudges(data.nudges);
+        if (data.staff) setStaff(data.staff);
+        if (data.expenses) setExpenses(data.expenses);
+        if (data.academicPrograms) setAcademicPrograms(data.academicPrograms);
+        if (data.vendors) setVendors(data.vendors);
+        if (data.reviews) setReviews(data.reviews);
+        if (data.handoff) setHandoff(data.handoff);
         if (data.setupConfig) {
           setSetupConfig(data.setupConfig);
           try {
@@ -161,6 +173,48 @@ export default function App() {
       localStorage.setItem('mb_setup_config', JSON.stringify(newConfig));
     } catch (e) {}
     syncSetupToSupabase(newConfig);
+  };
+
+  const handleAddStaff = (member: StaffMember) => {
+    setStaff(prev => [member, ...prev]);
+    syncStaffToSupabase(member);
+  };
+
+  const handleUpdateStaffVerification = (id: string, policeVerified?: boolean, firstAidCertified?: boolean) => {
+    setStaff(prev => prev.map(m => m.id === id ? {
+      ...m,
+      policeVerified: policeVerified !== undefined ? policeVerified : m.policeVerified,
+      firstAidCertified: firstAidCertified !== undefined ? firstAidCertified : m.firstAidCertified
+    } : m));
+    syncStaffVerificationToSupabase(id, policeVerified, firstAidCertified);
+  };
+
+  const handleAddExpense = (expense: ExpenseItem) => {
+    setExpenses(prev => [expense, ...prev]);
+    syncExpenseToSupabase(expense);
+  };
+
+  const handleSaveAcademicProgram = (program: AcademicProgram) => {
+    setAcademicPrograms(prev => {
+      const exists = prev.some(p => p.slug === program.slug);
+      return exists ? prev.map(p => p.slug === program.slug ? program : p) : [...prev, program];
+    });
+    syncCurriculumToSupabase(program);
+  };
+
+  const handleAddVendor = (vendor: LocalVendor) => {
+    setVendors(prev => [vendor, ...prev]);
+    syncVendorToSupabase(vendor);
+  };
+
+  const handleAddReview = (review: QualityReview) => {
+    setReviews(prev => [review, ...prev]);
+    syncReviewToSupabase(review);
+  };
+
+  const handleUpdateHandoff = (newHandoff: DailyHandoff) => {
+    setHandoff(newHandoff);
+    syncHandoffToSupabase(newHandoff);
   };
 
   return (
@@ -270,6 +324,10 @@ export default function App() {
               <CommsHubView
                 nudges={nudges}
                 onSendNudge={handleSendNudge}
+                inquiries={inquiries}
+                staff={staff}
+                vendors={vendors}
+                setupConfig={setupConfig}
               />
             )}
 
@@ -279,8 +337,24 @@ export default function App() {
                 activeFounder="academics"
                 inquiries={inquiries}
                 onAddInquiry={handleAddInquiry}
-                onUpdateInquiryStatus={handleUpdateInquiryStatus}
+                onUpdateInquiryStatus={(id, status) => {
+                  setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
+                }}
                 facilityZones={facilityZones}
+                setupConfig={setupConfig}
+                staff={staff}
+                onAddStaff={handleAddStaff}
+                onUpdateStaffVerification={handleUpdateStaffVerification}
+                expenses={expenses}
+                onAddExpense={handleAddExpense}
+                academicPrograms={academicPrograms}
+                onSaveAcademicProgram={handleSaveAcademicProgram}
+                vendors={vendors}
+                onAddVendor={handleAddVendor}
+                reviews={reviews}
+                onAddReview={handleAddReview}
+                handoff={handoff}
+                onUpdateHandoff={handleUpdateHandoff}
                 googleUser={googleUser}
                 hasGoogleToken={hasGoogleToken}
                 onAuthSuccess={(u, t) => {

@@ -1,4 +1,7 @@
-import { TaskItem, ParentInquiry, FacilityZone, VoiceNudge, SetupConfig } from '../types';
+import { 
+  TaskItem, ParentInquiry, FacilityZone, VoiceNudge, SetupConfig, 
+  StaffMember, ExpenseItem, AcademicProgram, LocalVendor, QualityReview, DailyHandoff 
+} from '../types';
 
 export interface SupabaseInitialData {
   tasks: TaskItem[];
@@ -6,6 +9,12 @@ export interface SupabaseInitialData {
   facilityZones: FacilityZone[];
   nudges: VoiceNudge[];
   setupConfig?: SetupConfig | null;
+  staff: StaffMember[];
+  expenses: ExpenseItem[];
+  academicPrograms: AcademicProgram[];
+  vendors: LocalVendor[];
+  reviews: QualityReview[];
+  handoff?: DailyHandoff | null;
 }
 
 export async function fetchInitialDataFromSupabase(): Promise<SupabaseInitialData | null> {
@@ -22,7 +31,13 @@ export async function fetchInitialDataFromSupabase(): Promise<SupabaseInitialDat
         inquiries: data.inquiries || [],
         facilityZones: data.facilityZones || [],
         nudges: data.nudges || [],
-        setupConfig: data.setupConfig || null
+        setupConfig: data.setupConfig || null,
+        staff: data.staff || [],
+        expenses: data.expenses || [],
+        academicPrograms: data.academicPrograms || [],
+        vendors: data.vendors || [],
+        reviews: data.reviews || [],
+        handoff: data.handoff || null
       };
     }
     return null;
@@ -120,4 +135,124 @@ export async function syncSetupToSupabase(setup: SetupConfig): Promise<boolean> 
     return false;
   }
 }
+
+export async function syncStaffToSupabase(staffMember: StaffMember): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'add-staff',
+        payload: staffMember
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync staff to Supabase:', err);
+    return false;
+  }
+}
+
+export async function syncStaffVerificationToSupabase(id: string, policeVerified?: boolean, firstAidCertified?: boolean): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'update-staff-verification',
+        payload: { id, policeVerified, firstAidCertified }
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync staff verification to Supabase:', err);
+    return false;
+  }
+}
+
+export async function syncExpenseToSupabase(expense: ExpenseItem): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'add-expense',
+        payload: expense
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync expense to Supabase:', err);
+    return false;
+  }
+}
+
+export async function syncCurriculumToSupabase(program: AcademicProgram): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'save-curriculum',
+        payload: program
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync curriculum to Supabase:', err);
+    return false;
+  }
+}
+
+export async function syncVendorToSupabase(vendor: LocalVendor): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'add-vendor',
+        payload: vendor
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync vendor to Supabase:', err);
+    return false;
+  }
+}
+
+export async function syncReviewToSupabase(review: QualityReview): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'add-review',
+        payload: review
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync review to Supabase:', err);
+    return false;
+  }
+}
+
+export async function syncHandoffToSupabase(handoff: DailyHandoff): Promise<boolean> {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'update-handoff',
+        payload: handoff
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Failed to sync handoff to Supabase:', err);
+    return false;
+  }
+}
+
 

@@ -5,7 +5,10 @@ import {
   Sparkles, CheckCircle2, ChevronRight
 } from 'lucide-react';
 import { User } from 'firebase/auth';
-import { ActiveFounderRole, ParentInquiry, FacilityZone } from '../../types';
+import { 
+  ActiveFounderRole, ParentInquiry, FacilityZone, SetupConfig,
+  StaffMember, ExpenseItem, AcademicProgram, LocalVendor, QualityReview, DailyHandoff 
+} from '../../types';
 import { AdmissionsView } from './AdmissionsView';
 import { FacilityView } from './FacilityView';
 import { AcademicsView } from './AcademicsView';
@@ -23,6 +26,20 @@ interface SchoolHubViewProps {
   onAddInquiry?: (inquiry: ParentInquiry) => void;
   onUpdateInquiryStatus?: (id: string, status: ParentInquiry['status']) => void;
   facilityZones?: FacilityZone[];
+  setupConfig?: SetupConfig | null;
+  staff?: StaffMember[];
+  onAddStaff?: (member: StaffMember) => void;
+  onUpdateStaffVerification?: (id: string, policeVerified?: boolean, firstAidCertified?: boolean) => void;
+  expenses?: ExpenseItem[];
+  onAddExpense?: (expense: ExpenseItem) => void;
+  academicPrograms?: AcademicProgram[];
+  onSaveAcademicProgram?: (program: AcademicProgram) => void;
+  vendors?: LocalVendor[];
+  onAddVendor?: (vendor: LocalVendor) => void;
+  reviews?: QualityReview[];
+  onAddReview?: (review: QualityReview) => void;
+  handoff?: DailyHandoff | null;
+  onUpdateHandoff?: (handoff: DailyHandoff) => void;
   googleUser?: User | null;
   hasGoogleToken?: boolean;
   onAuthSuccess?: (user: User, token: string | null) => void;
@@ -36,6 +53,20 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
   onAddInquiry = () => {},
   onUpdateInquiryStatus = () => {},
   facilityZones = INITIAL_FACILITY_ZONES,
+  setupConfig,
+  staff = [],
+  onAddStaff,
+  onUpdateStaffVerification,
+  expenses = [],
+  onAddExpense,
+  academicPrograms = [],
+  onSaveAcademicProgram,
+  vendors = [],
+  onAddVendor,
+  reviews = [],
+  onAddReview,
+  handoff,
+  onUpdateHandoff,
   googleUser = null,
   hasGoogleToken = false,
   onAuthSuccess = () => {},
@@ -161,19 +192,40 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
             <FacilityView zones={facilityZones} />
           )}
           {selectedSection === 'academics' && (
-            <AcademicsView />
+            <AcademicsView
+              programs={academicPrograms}
+              onSaveProgram={onSaveAcademicProgram}
+            />
           )}
           {selectedSection === 'toddlers' && (
-            <ToddlerLabView />
+            <ToddlerLabView
+              reviews={reviews}
+              handoff={handoff}
+              setupConfig={setupConfig}
+              onAddReview={onAddReview}
+              onUpdateHandoff={onUpdateHandoff}
+            />
           )}
           {selectedSection === 'finances' && (
-            <FinanceView />
+            <FinanceView
+              expenses={expenses}
+              setupConfig={setupConfig}
+              onAddExpense={onAddExpense}
+            />
           )}
           {selectedSection === 'staff' && (
-            <StaffView />
+            <StaffView
+              staffList={staff}
+              onAddStaff={onAddStaff}
+              onUpdateVerification={onUpdateStaffVerification}
+            />
           )}
           {selectedSection === 'kota' && (
-            <KotaHubView />
+            <KotaHubView
+              vendors={vendors}
+              setupConfig={setupConfig}
+              onAddVendor={onAddVendor}
+            />
           )}
           {selectedSection === 'google' && (
             <GoogleSettingsView 

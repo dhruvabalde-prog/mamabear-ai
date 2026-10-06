@@ -145,13 +145,120 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
+      if (type === 'staff') {
+        const result = await client.query('SELECT * FROM mb_staff ORDER BY name ASC;');
+        return res.status(200).json({
+          success: true,
+          staff: result.rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            role: r.role,
+            status: r.status,
+            policeVerified: Boolean(r.police_verified),
+            firstAidCertified: Boolean(r.first_aid_certified),
+            salary: Number(r.salary || 0),
+            assignedClass: r.assigned_class,
+            contact: r.contact
+          }))
+        });
+      }
+
+      if (type === 'expenses') {
+        const result = await client.query('SELECT * FROM mb_expenses ORDER BY paid_date DESC, created_at DESC;');
+        return res.status(200).json({
+          success: true,
+          expenses: result.rows.map(r => ({
+            id: r.id,
+            category: r.category,
+            item: r.item,
+            amount: Number(r.amount || 0),
+            paidDate: r.paid_date,
+            status: r.status,
+            vendor: r.vendor,
+            authorizedBy: r.authorized_by
+          }))
+        });
+      }
+
+      if (type === 'curriculum') {
+        const result = await client.query('SELECT * FROM mb_academic_programs ORDER BY slug ASC;');
+        return res.status(200).json({
+          success: true,
+          academicPrograms: result.rows.map(r => ({
+            id: r.id,
+            slug: r.slug,
+            name: r.name,
+            ageBracket: r.age_bracket,
+            icon: r.icon,
+            description: r.description,
+            learningCenters: r.learning_centers || [],
+            weeklyThemes: r.weekly_themes || []
+          }))
+        });
+      }
+
+      if (type === 'vendors') {
+        const result = await client.query('SELECT * FROM mb_local_vendors ORDER BY name ASC;');
+        return res.status(200).json({
+          success: true,
+          vendors: result.rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            serviceCategory: r.service_category,
+            area: r.area,
+            phone: r.phone,
+            contactPerson: r.contact_person,
+            status: r.status
+          }))
+        });
+      }
+
+      if (type === 'reviews') {
+        const result = await client.query('SELECT * FROM mb_quality_reviews ORDER BY created_at DESC LIMIT 50;');
+        return res.status(200).json({
+          success: true,
+          reviews: result.rows.map(r => ({
+            id: r.id,
+            itemTested: r.item_tested,
+            tester: r.tester,
+            rating: Number(r.rating || 5),
+            verdict: r.verdict,
+            comment: r.comment,
+            createdAt: r.created_at
+          }))
+        });
+      }
+
+      if (type === 'handoff') {
+        const result = await client.query('SELECT * FROM mb_daily_handoffs ORDER BY date DESC LIMIT 1;');
+        const r = result.rows[0] || null;
+        return res.status(200).json({
+          success: true,
+          handoff: r ? {
+            id: r.id,
+            date: r.date,
+            afternoonPickupLead: r.afternoon_pickup_lead,
+            statusNote: r.status_note
+          } : null
+        });
+      }
+
       // Default: return all initial datasets together
-      const [tasksRes, inqRes, zonesRes, nudgesRes, setupRes] = await Promise.all([
+      const [
+        tasksRes, inqRes, zonesRes, nudgesRes, setupRes,
+        staffRes, expensesRes, curriculumRes, vendorsRes, reviewsRes, handoffRes
+      ] = await Promise.all([
         client.query('SELECT * FROM mb_tasks ORDER BY phase_day ASC, id ASC LIMIT 500;'),
         client.query('SELECT * FROM mb_parent_inquiries ORDER BY created_at DESC;'),
         client.query('SELECT * FROM mb_facility_zones ORDER BY id ASC;'),
         client.query('SELECT * FROM mb_voice_nudges ORDER BY created_at DESC LIMIT 50;'),
-        client.query('SELECT * FROM mb_setup_config ORDER BY created_at DESC LIMIT 1;')
+        client.query('SELECT * FROM mb_setup_config ORDER BY created_at DESC LIMIT 1;'),
+        client.query('SELECT * FROM mb_staff ORDER BY name ASC;'),
+        client.query('SELECT * FROM mb_expenses ORDER BY paid_date DESC, created_at DESC;'),
+        client.query('SELECT * FROM mb_academic_programs ORDER BY slug ASC;'),
+        client.query('SELECT * FROM mb_local_vendors ORDER BY name ASC;'),
+        client.query('SELECT * FROM mb_quality_reviews ORDER BY created_at DESC LIMIT 50;'),
+        client.query('SELECT * FROM mb_daily_handoffs ORDER BY date DESC LIMIT 1;')
       ]);
 
       const setupRow = setupRes.rows[0] || null;
@@ -177,6 +284,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         isSetupCompleted: Boolean(setupRow.is_setup_completed),
         setupStep: Number(setupRow.setup_step || 1)
       } : null;
+
+      const handoffRow = handoffRes.rows[0] || null;
 
       return res.status(200).json({
         success: true,
@@ -237,7 +346,62 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           tag: r.tag,
           duration: r.duration,
           audioPlayed: r.audio_played
-        }))
+        })),
+        staff: staffRes.rows.map(r => ({
+          id: r.id,
+          name: r.name,
+          role: r.role,
+          status: r.status,
+          policeVerified: Boolean(r.police_verified),
+          firstAidCertified: Boolean(r.first_aid_certified),
+          salary: Number(r.salary || 0),
+          assignedClass: r.assigned_class,
+          contact: r.contact
+        })),
+        expenses: expensesRes.rows.map(r => ({
+          id: r.id,
+          category: r.category,
+          item: r.item,
+          amount: Number(r.amount || 0),
+          paidDate: r.paid_date,
+          status: r.status,
+          vendor: r.vendor,
+          authorizedBy: r.authorized_by
+        })),
+        academicPrograms: curriculumRes.rows.map(r => ({
+          id: r.id,
+          slug: r.slug,
+          name: r.name,
+          ageBracket: r.age_bracket,
+          icon: r.icon,
+          description: r.description,
+          learningCenters: r.learning_centers || [],
+          weeklyThemes: r.weekly_themes || []
+        })),
+        vendors: vendorsRes.rows.map(r => ({
+          id: r.id,
+          name: r.name,
+          serviceCategory: r.service_category,
+          area: r.area,
+          phone: r.phone,
+          contactPerson: r.contact_person,
+          status: r.status
+        })),
+        reviews: reviewsRes.rows.map(r => ({
+          id: r.id,
+          itemTested: r.item_tested,
+          tester: r.tester,
+          rating: Number(r.rating || 5),
+          verdict: r.verdict,
+          comment: r.comment,
+          createdAt: r.created_at
+        })),
+        handoff: handoffRow ? {
+          id: handoffRow.id,
+          date: handoffRow.date,
+          afternoonPickupLead: handoffRow.afternoon_pickup_lead,
+          statusNote: handoffRow.status_note
+        } : null
       });
     }
 
@@ -380,6 +544,142 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           s.setupStep || 4
         ]);
         return res.status(200).json({ success: true, message: 'School setup configuration saved to Supabase' });
+      }
+
+      if (action === 'add-staff') {
+        const m = payload;
+        await client.query(`
+          INSERT INTO mb_staff (id, name, role, status, police_verified, first_aid_certified, salary, assigned_class, contact)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            role = EXCLUDED.role,
+            status = EXCLUDED.status,
+            police_verified = EXCLUDED.police_verified,
+            first_aid_certified = EXCLUDED.first_aid_certified,
+            salary = EXCLUDED.salary,
+            assigned_class = EXCLUDED.assigned_class,
+            contact = EXCLUDED.contact,
+            updated_at = NOW();
+        `, [
+          m.id || `staff-${Date.now()}`,
+          m.name,
+          m.role,
+          m.status || 'Shortlisted',
+          Boolean(m.policeVerified),
+          Boolean(m.firstAidCertified),
+          Number(m.salary || 0),
+          m.assignedClass || null,
+          m.contact
+        ]);
+        return res.status(200).json({ success: true, message: 'Staff member saved to Supabase' });
+      }
+
+      if (action === 'update-staff-verification') {
+        const { id, policeVerified, firstAidCertified } = payload;
+        await client.query(`
+          UPDATE mb_staff 
+          SET police_verified = COALESCE($1, police_verified),
+              first_aid_certified = COALESCE($2, first_aid_certified),
+              updated_at = NOW()
+          WHERE id = $3;
+        `, [policeVerified, firstAidCertified, id]);
+        return res.status(200).json({ success: true, message: 'Staff verification updated' });
+      }
+
+      if (action === 'add-expense') {
+        const exp = payload;
+        await client.query(`
+          INSERT INTO mb_expenses (id, category, item, amount, paid_date, status, vendor, authorized_by)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+        `, [
+          exp.id || `exp-${Date.now()}`,
+          exp.category,
+          exp.item,
+          Number(exp.amount),
+          exp.paidDate || new Date().toISOString().split('T')[0],
+          exp.status || 'Paid',
+          exp.vendor || '',
+          exp.authorizedBy || 'Joint'
+        ]);
+        return res.status(200).json({ success: true, message: 'Expense saved to Supabase' });
+      }
+
+      if (action === 'save-curriculum') {
+        const p = payload;
+        await client.query(`
+          INSERT INTO mb_academic_programs (id, slug, name, age_bracket, icon, description, learning_centers, weekly_themes)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT (slug) DO UPDATE SET
+            name = EXCLUDED.name,
+            age_bracket = EXCLUDED.age_bracket,
+            icon = EXCLUDED.icon,
+            description = EXCLUDED.description,
+            learning_centers = EXCLUDED.learning_centers,
+            weekly_themes = EXCLUDED.weekly_themes,
+            updated_at = NOW();
+        `, [
+          p.id || `prog-${p.slug}`,
+          p.slug,
+          p.name,
+          p.ageBracket,
+          p.icon,
+          p.description,
+          JSON.stringify(p.learningCenters || []),
+          JSON.stringify(p.weeklyThemes || [])
+        ]);
+        return res.status(200).json({ success: true, message: 'Curriculum unit saved' });
+      }
+
+      if (action === 'add-vendor') {
+        const v = payload;
+        await client.query(`
+          INSERT INTO mb_local_vendors (id, name, service_category, area, phone, contact_person, status)
+          VALUES ($1, $2, $3, $4, $5, $6, $7);
+        `, [
+          v.id || `vend-${Date.now()}`,
+          v.name,
+          v.serviceCategory,
+          v.area,
+          v.phone,
+          v.contactPerson,
+          v.status || 'Lead'
+        ]);
+        return res.status(200).json({ success: true, message: 'Vendor saved' });
+      }
+
+      if (action === 'add-review') {
+        const r = payload;
+        await client.query(`
+          INSERT INTO mb_quality_reviews (id, item_tested, tester, rating, verdict, comment)
+          VALUES ($1, $2, $3, $4, $5, $6);
+        `, [
+          r.id || `rev-${Date.now()}`,
+          r.itemTested,
+          r.tester,
+          Number(r.rating || 5),
+          r.verdict || 'Approved for Campus',
+          r.comment || ''
+        ]);
+        return res.status(200).json({ success: true, message: 'Quality review recorded' });
+      }
+
+      if (action === 'update-handoff') {
+        const h = payload;
+        await client.query(`
+          INSERT INTO mb_daily_handoffs (id, date, afternoon_pickup_lead, status_note)
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (id) DO UPDATE SET
+            afternoon_pickup_lead = EXCLUDED.afternoon_pickup_lead,
+            status_note = EXCLUDED.status_note,
+            updated_at = NOW();
+        `, [
+          h.id || `handoff-${h.date || new Date().toISOString().split('T')[0]}`,
+          h.date || new Date().toISOString().split('T')[0],
+          h.afternoonPickupLead,
+          h.statusNote || null
+        ]);
+        return res.status(200).json({ success: true, message: 'Daily pickup handoff saved' });
       }
 
       return res.status(400).json({ error: 'Unknown action' });
