@@ -8,13 +8,15 @@ interface LockedFooterProps {
   onSelectTab: (tab: string) => void;
   totalTaskCount?: number;
   unreadCommsCount?: number;
+  onOpenAdmin?: () => void;
 }
 
 export const LockedFooter: React.FC<LockedFooterProps> = ({
   currentTab,
   onSelectTab,
   totalTaskCount = 400,
-  unreadCommsCount = 3
+  unreadCommsCount = 3,
+  onOpenAdmin
 }) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-sm pb-[env(safe-area-inset-bottom)]">
@@ -107,6 +109,18 @@ export const LockedFooter: React.FC<LockedFooterProps> = ({
           <Building2 className={`w-5 h-5 ${currentTab === 'school' ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
           <span className="text-[10px] mt-1 tracking-tight font-medium">School</span>
         </button>
+
+        {/* Discrete Admin Console trigger at the bottom */}
+        {onOpenAdmin && (
+          <button
+            type="button"
+            onClick={onOpenAdmin}
+            className="w-5 h-5 rounded-full flex items-center justify-center text-slate-300 hover:text-slate-600 transition-colors cursor-pointer shrink-0 ml-1 opacity-40 hover:opacity-100"
+            title="Console"
+          >
+            <span className="text-[10px] select-none font-mono">⚙</span>
+          </button>
+        )}
 
       </div>
     </nav>

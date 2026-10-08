@@ -44,6 +44,9 @@ interface SchoolHubViewProps {
   hasGoogleToken?: boolean;
   onAuthSuccess?: (user: User, token: string | null) => void;
   onAuthLogout?: () => void;
+  baileysStatus?: BaileysConnectionStatus;
+  onConnectBaileys?: () => void;
+  onDisconnectBaileys?: () => void;
 }
 
 export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
@@ -71,7 +74,10 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
   googleUser = null,
   hasGoogleToken = false,
   onAuthSuccess = () => {},
-  onAuthLogout = () => {}
+  onAuthLogout = () => {},
+  baileysStatus = { status: 'disconnected' },
+  onConnectBaileys = () => {},
+  onDisconnectBaileys = () => {}
 }) => {
   const [selectedSection, setSelectedSection] = useState<string | null>(initialSubSection || null);
 
@@ -237,6 +243,9 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
               onAuthSuccess={onAuthSuccess} 
               onAuthLogout={onAuthLogout} 
               onClose={() => setSelectedSection(null)}
+              baileysStatus={baileysStatus}
+              onConnectBaileys={onConnectBaileys}
+              onDisconnectBaileys={onDisconnectBaileys}
             />
           )}
         </div>

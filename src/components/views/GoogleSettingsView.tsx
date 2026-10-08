@@ -20,6 +20,9 @@ import {
   GmailMessageSummary 
 } from '../../services/firebaseAuth';
 import { ConfirmationModal } from '../ConfirmationModal';
+import { BaileysConnect } from '../BaileysConnect';
+import { AdminPanelModal } from '../AdminPanelModal';
+import { BaileysConnectionStatus } from '../../types';
 
 interface GoogleSettingsViewProps {
   user: User | null;
@@ -27,6 +30,9 @@ interface GoogleSettingsViewProps {
   onAuthSuccess: (user: User, token: string | null) => void;
   onAuthLogout: () => void;
   onClose?: () => void;
+  baileysStatus?: BaileysConnectionStatus;
+  onConnectBaileys?: () => void;
+  onDisconnectBaileys?: () => void;
 }
 
 export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
@@ -34,7 +40,10 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
   hasToken,
   onAuthSuccess,
   onAuthLogout,
-  onClose
+  onClose,
+  baileysStatus = { status: 'disconnected' },
+  onConnectBaileys = () => {},
+  onDisconnectBaileys = () => {}
 }) => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -56,8 +65,8 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
   // Partner & Family Integrations
   const [familyIntegrations, setFamilyIntegrations] = useState<{ name: string; role: string; email: string; connected: boolean }[]>([]);
 
-
-  // Admin panel state
+  // Admin panel state (secured modal with dhruvabalde@gmail.com 210996)
+  const [showAdminModal, setShowAdminModal] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   // Gmail Inbox state
@@ -224,6 +233,30 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
               Disconnect
             </button>
           )}
+        </div>
+
+        {/* WhatsApp & Phone Permissions Card inside Settings */}
+        <div className="pt-3 border-t border-slate-100 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-extrabold text-slate-800">
+              WhatsApp Link & Phone Permissions
+            </span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+              baileysStatus?.status === 'connected' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+            }`}>
+              {baileysStatus?.status === 'connected' ? 'Linked & Monitoring' : 'Setup Required'}
+            </span>
+          </div>
+
+          <p className="text-[11px] text-slate-500 leading-relaxed">
+            Link your phone to ingest live messages and synthesize executive Story Cards without manual copy-pasting.
+          </p>
+
+          <BaileysConnect
+            status={baileysStatus}
+            onConnect={onConnectBaileys}
+            onDisconnect={onDisconnectBaileys}
+          />
         </div>
 
         {/* Work / Co-founder Accounts & Auto-Access */}
@@ -425,32 +458,24 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
         )}
       </div>
 
-      {/* 4. FADED ADMIN PANEL BUTTON AT BOTTOM */}
+      {/* 4. SECURE ADMIN PANEL BUTTON AT BOTTOM */}
       <div className="pt-4 flex flex-col items-center justify-center gap-2">
         <button
           type="button"
-          onClick={() => setShowAdminPanel(!showAdminPanel)}
-          className="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer py-1"
+          onClick={() => setShowAdminModal(true)}
+          className="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer py-1 flex items-center gap-1"
         >
-          {showAdminPanel ? '▼ Hide Admin Console' : '▶ Admin Panel (GCP Client & Scopes)'}
+          <span>Admin Console</span>
         </button>
-
-        {showAdminPanel && (
-          <div className="w-full p-4 bg-slate-100 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-2 animate-in fade-in">
-            <div className="flex items-center justify-between font-mono text-[11px]">
-              <span>OAuth Client ID:</span>
-              <span className="font-bold">301887096298-j3uc7usn6ramv73q8nbupj81mtil8vt2</span>
-            </div>
-            <div className="flex items-center justify-between font-mono text-[11px]">
-              <span>GCP Project:</span>
-              <span className="font-bold">gen-lang-client-0380471922</span>
-            </div>
-            <div className="text-[10px] text-slate-500 font-mono">
-              Scopes: gmail.readonly, gmail.send, calendar, tasks, drive.file
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Secure Admin Console Modal */}
+      <AdminPanelModal
+        isOpen={showAdminModal}
+        onClose={() => setShowAdminModal(false)}
+        baileysStatus={baileysStatus}
+        onResetBaileys={onDisconnectBaileys}
+      />
 
       {/* Message Reader Modal */}
       {selectedMessage && (

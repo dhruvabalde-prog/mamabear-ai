@@ -35,6 +35,7 @@ import { CommsHubView } from './components/views/CommsHubView';
 import { SchoolHubView } from './components/views/SchoolHubView';
 import { GoogleSettingsView } from './components/views/GoogleSettingsView';
 import { StoryCardsPageView } from './components/views/StoryCardsPageView';
+import { AdminPanelModal } from './components/AdminPanelModal';
 
 export default function App() {
   // Navigation: 5 core tabs ('dashboard', 'tasks', 'mamabear', 'comms', 'school')
@@ -45,6 +46,7 @@ export default function App() {
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
   const [showStoryCardsPage, setShowStoryCardsPage] = useState<boolean>(false);
+  const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
 
   // Baileys WhatsApp & Executive Operations Story Cards State
@@ -402,6 +404,9 @@ export default function App() {
               setHasGoogleToken(false);
             }}
             onClose={() => setShowGooglePortal(false)}
+            baileysStatus={baileysStatus}
+            onConnectBaileys={handleConnectBaileys}
+            onDisconnectBaileys={handleDisconnectBaileys}
           />
         ) : viewingTask ? (
           <TaskDetailPage
@@ -500,6 +505,9 @@ export default function App() {
                   setGoogleUser(null);
                   setHasGoogleToken(false);
                 }}
+                baileysStatus={baileysStatus}
+                onConnectBaileys={handleConnectBaileys}
+                onDisconnectBaileys={handleDisconnectBaileys}
               />
             )}
           </>
@@ -516,6 +524,15 @@ export default function App() {
         }}
         totalTaskCount={tasks.length}
         unreadCommsCount={nudges.length > 0 ? nudges.length : 3}
+        onOpenAdmin={() => setShowAdminModal(true)}
+      />
+
+      {/* Global Secure Admin Console Modal */}
+      <AdminPanelModal
+        isOpen={showAdminModal}
+        onClose={() => setShowAdminModal(false)}
+        baileysStatus={baileysStatus}
+        onResetBaileys={handleDisconnectBaileys}
       />
     </div>
   );
