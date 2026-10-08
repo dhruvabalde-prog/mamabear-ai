@@ -53,7 +53,7 @@ export const AdmissionsView: React.FC<AdmissionsViewProps> = ({
     const isCoaching = inq.parentBackground.toLowerCase().includes('coaching') || inq.parentBackground.toLowerCase().includes('allen') || inq.parentBackground.toLowerCase().includes('resonance');
 
     if (isDoctor) {
-      return `Hello ${inq.parentName}! This is Priya & Ananya from Maple Bear Canadian Pre-School, Subhash Nagar, Kota. 
+      return `Hello ${inq.parentName}! This is the Admissions Team from Maple Bear Canadian Pre-School, Subhash Nagar, Kota. 
 
 Thank you for your interest in our Canadian early childhood program for ${inq.childName} (${inq.childAge}, ${inq.grade}). As healthcare professionals with intense schedules, we would love to host you for a private campus walkthrough to see our child-safe natural Kota stone flooring, CCTV childproofing, and bilingual inquiry classrooms.
 
@@ -61,7 +61,7 @@ Would Saturday morning at 10:30 AM or Sunday at 11:00 AM work for your visit?`;
     }
 
     if (isCoaching) {
-      return `Namaste ${inq.parentName} Ji! This is Priya & Ananya from Maple Bear Canadian Pre-School, Subhash Nagar, Kota. 
+      return `Namaste ${inq.parentName} Ji! This is the Admissions Team from Maple Bear Canadian Pre-School, Subhash Nagar, Kota. 
 
 Thank you for connecting with us regarding ${inq.childName} (${inq.childAge}) for ${inq.grade}. As educators in Kota's premier coaching institutes, you understand foundational inquiry better than anyone. Our Canadian immersion curriculum builds self-directed curiosity and early STEM habits before formal schooling begins.
 

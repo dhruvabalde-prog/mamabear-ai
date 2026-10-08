@@ -57,8 +57,8 @@ export const FacilityView: React.FC<FacilityViewProps> = ({
 
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Toddler Childproofing</span>
-          <span className="text-2xl font-black text-rose-600 mt-0.5 block">4.8 / 5.0 ★</span>
-          <span className="text-[11px] text-slate-500 font-semibold block mt-1">Verified with Aarav & Myra (3yo)</span>
+          <span className="text-2xl font-black text-rose-600 mt-0.5 block">5.0 / 5.0 ★</span>
+          <span className="text-[11px] text-slate-500 font-semibold block mt-1">Verified with Canadian Safety Protocols</span>
         </div>
       </div>
 

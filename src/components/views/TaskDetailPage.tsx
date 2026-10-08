@@ -196,6 +196,63 @@ export const TaskDetailPage: React.FC<TaskDetailPageProps> = ({
     }
   };
 
+  const handleSendViaWhatsApp = async () => {
+    const text = plan?.draftMessage || `Update regarding "${task.title}" for Maple Bear Canadian Pre-School, Subhash Nagar, Kota.`;
+    try {
+      const res = await fetch('/api/baileys/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chatId: 'status@broadcast',
+          text
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSyncSuccessMsg('✓ Dispatched update via WhatsApp');
+      } else {
+        // Fallback to web link
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      }
+    } catch (e) {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+  };
+
+  const handleDownloadChecklist = () => {
+    const checklistContent = `====================================================
+MAPLE BEAR CANADIAN PRE-SCHOOL, SUBHASH NAGAR, KOTA
+TASK EXECUTION BRIEF & OPERATIONAL CHECKLIST
+====================================================
+Task ID: ${task.id}
+Title: ${task.title}
+Department: ${task.department}
+Assigned Lead: ${task.assignedTo}
+Phase Day: Day ${task.phaseDay} of 60
+Status: ${task.status.toUpperCase()}
+
+EXECUTIVE SUMMARY:
+${plan?.summary || task.description}
+
+OPERATIONAL STEPS:
+${plan?.steps?.map((s, idx) => `${idx + 1}. ${s}`).join('\n') || '1. Verify Maple Bear specifications\n2. Execute field test\n3. Sign off'}
+
+CHECKLIST:
+${plan?.checklist?.map((c, idx) => `[${c.done ? 'X' : ' '}] ${c.text}`).join('\n') || '[ ] Verify specifications\n[ ] Safety audit\n[ ] Leadership sign-off'}
+
+FOUNDER ADVISORY:
+${plan?.founderTips || 'Ensure materials withstand Kota temperature realities and meet Canadian ECE safety standards.'}
+`;
+    const blob = new Blob([checklistContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${task.id}_checklist.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setSyncSuccessMsg('✓ Downloaded operational checklist');
+  };
+
   return (
     <div className="pb-28 max-w-3xl mx-auto space-y-5 animate-in fade-in duration-200">
       {/* Top Back Navigation Bar */}
@@ -343,7 +400,7 @@ export const TaskDetailPage: React.FC<TaskDetailPageProps> = ({
               Assigned Founder
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {['Priya (Academics)', 'Ananya (Business)', 'Both Co-founders'].map((a) => (
+              {['Academic Director', 'Managing Director', 'Both Co-founders'].map((a) => (
                 <button
                   key={a}
                   type="button"
@@ -360,12 +417,12 @@ export const TaskDetailPage: React.FC<TaskDetailPageProps> = ({
             </div>
           </div>
 
-          {/* Mom-duty toggle */}
+          {/* Child-safety toggle */}
           <div className="flex items-center justify-between p-3 bg-rose-50/70 rounded-2xl border border-rose-100">
             <div className="flex items-center gap-2">
               <Baby className="w-4 h-4 text-rose-600" />
               <span className="text-xs font-bold text-rose-950">
-                Kid-Test with 3yo Toddlers (Aarav & Myra)
+                Child-Test with 3yo Toddlers (Child-Safe ECE)
               </span>
             </div>
             <button
@@ -635,6 +692,27 @@ export const TaskDetailPage: React.FC<TaskDetailPageProps> = ({
               >
                 <FileText className="w-4 h-4 text-amber-600" />
                 <span>{plan.syncedGoogle?.drive ? 'In Drive' : 'Drive'}</span>
+              </button>
+            </div>
+
+            {/* Quick Dispatch: WhatsApp & Downloadable Spec */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSendViaWhatsApp}
+                className="w-full sm:flex-1 py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-2xs"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>WhatsApp Brief</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDownloadChecklist}
+                className="w-full sm:flex-1 py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-2xs"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Download Spec</span>
               </button>
             </div>
           </div>

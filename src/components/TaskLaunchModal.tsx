@@ -243,7 +243,7 @@ CHECKLIST:
 ${plan?.checklist.map(c => `[${c.done ? 'X' : ' '}] ${c.text}`).join('\n')}
 
 FOUNDER TIPS:
-${plan?.founderTips || 'Test with 3yo toddlers Aarav & Myra before final sign-off.'}`;
+${plan?.founderTips || 'Test with 3yo toddlers before final sign-off.'}`;
 
           await createGoogleDriveDocument(token, task.title, content);
         }
@@ -395,7 +395,7 @@ ${plan?.founderTips || 'Test with 3yo toddlers Aarav & Myra before final sign-of
                     Lead Co-Founder
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {['Priya (Academics)', 'Ananya (Business)', 'Both Co-founders'].map((a) => (
+                    {['Academic Director', 'Managing Director', 'Both Co-founders'].map((a) => (
                       <button
                         key={a}
                         type="button"
@@ -417,7 +417,7 @@ ${plan?.founderTips || 'Test with 3yo toddlers Aarav & Myra before final sign-of
                   <div className="flex items-center gap-2">
                     <Baby className="w-4 h-4 text-rose-500" />
                     <span className="text-xs font-semibold text-slate-700">
-                      Kid-Test with 3yo Toddlers (Aarav & Myra)
+                      Child-Test with 3yo Toddlers (Child-Safe ECE)
                     </span>
                   </div>
                   <button

@@ -217,14 +217,14 @@ export const LaunchTimelineView: React.FC<LaunchTimelineViewProps> = ({
               </h3>
               <div className="space-y-2 text-xs">
                 {[
-                  { time: '8:00 AM', title: 'Campus Health & Kota AC Temperature Check', lead: 'Ananya' },
-                  { time: '8:30 AM', title: 'Children Arrival & Biometric Check-in', lead: 'Priya' },
+                  { time: '8:00 AM', title: 'Campus Health & Kota AC Temperature Check', lead: 'Operations' },
+                  { time: '8:30 AM', title: 'Children Arrival & Biometric Check-in', lead: 'Academics' },
                   { time: '9:00 AM', title: 'Canadian Morning Circle & Bilingual Greeting', lead: 'Educators' },
                   { time: '9:45 AM', title: 'Inquiry-Based Learning Centers & Discovery', lead: 'Educators' },
                   { time: '10:30 AM', title: 'Nutritious Organic Fruit Snack & Handwash', lead: 'Caregivers' },
-                  { time: '11:00 AM', title: 'Outdoor Gross Motor Play & Tricycle Track', lead: 'Priya' },
+                  { time: '11:00 AM', title: 'Outdoor Gross Motor Play & Tricycle Track', lead: 'Academics' },
                   { time: '12:00 PM', title: 'Closing Story & Canadian Song Reflection', lead: 'Educators' },
-                  { time: '12:30 PM', title: 'Parent Pick-up & School Van Departure', lead: 'Ananya' }
+                  { time: '12:30 PM', title: 'Parent Pick-up & School Van Departure', lead: 'Operations' }
                 ].map((s, idx) => (
                   <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">
                     <div className="flex items-center gap-2.5">
@@ -247,10 +247,10 @@ export const LaunchTimelineView: React.FC<LaunchTimelineViewProps> = ({
               <div className="space-y-2 text-xs">
                 {[
                   { time: '12:45 PM', title: 'Hot Lunch (Millets, Dal, Seasonal Vegetables)', lead: 'Caregivers' },
-                  { time: '1:30 PM', title: 'Quiet Rest & Nap Suite (Lullabies & Dimmable Lights)', lead: 'Priya' },
+                  { time: '1:30 PM', title: 'Quiet Rest & Nap Suite (Lullabies & Dimmable Lights)', lead: 'Academics' },
                   { time: '3:30 PM', title: 'Wake-up Freshening & Light Snack', lead: 'Caregivers' },
                   { time: '4:00 PM', title: 'Messy Art, Sensory Clay & Storytelling', lead: 'Educators' },
-                  { time: '5:00 PM', title: 'Free Choice Games & Evening Parent Handoff', lead: 'Ananya' },
+                  { time: '5:00 PM', title: 'Free Choice Games & Evening Parent Handoff', lead: 'Operations' },
                   { time: '5:30 PM', title: 'Daily Deep Sanitization & CCTV Gate Lock', lead: 'Team' }
                 ].map((s, idx) => (
                   <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">

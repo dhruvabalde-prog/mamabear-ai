@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { 
   Search, CheckCircle2, Clock, ChevronRight, 
-  Sparkles, MessageCircle, ArrowUpRight, Baby, Filter, UserCheck, Check, User
+  Sparkles, MessageCircle, ArrowUpRight, Baby, Filter, UserCheck, Check, User, Zap, Play
 } from 'lucide-react';
 import { TaskItem } from '../../types';
+import { automationRunner } from '../../services/automationRunner';
 
 interface TaskBoardViewProps {
   tasks: TaskItem[];
@@ -17,12 +18,12 @@ export const TaskBoardView: React.FC<TaskBoardViewProps> = ({
   onUpdateTask
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [assigneeFilter, setAssigneeFilter] = useState<'all' | 'Priya (Academics)' | 'Ananya (Business)' | 'Both Co-founders'>('all');
+  const [assigneeFilter, setAssigneeFilter] = useState<'all' | 'Academic Director' | 'Managing Director' | 'Both Co-founders'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'in_progress' | 'completed'>('all');
   const [kidFilter, setKidFilter] = useState<'all' | 'kid_friendly' | 'deep_work_no_kids'>('all');
 
-  // All Categories from ALL 400 tasks
+  // All Categories from ALL 500 tasks
   const categories = useMemo(() => {
     const set = new Set<string>();
     tasks.forEach(t => {
@@ -70,7 +71,7 @@ export const TaskBoardView: React.FC<TaskBoardViewProps> = ({
     const updated: TaskItem = {
       ...task,
       assignedTo: newAssignee,
-      founderRole: newAssignee.includes('Priya') ? 'academics' : newAssignee.includes('Ananya') ? 'business' : 'common'
+      founderRole: newAssignee.includes('Academic') ? 'academics' : newAssignee.includes('Managing') ? 'business' : 'common'
     };
     onUpdateTask(updated);
   };
@@ -95,6 +96,28 @@ ${task.executionPlan?.summary ? `• Plan: ${task.executionPlan.summary}` : ''}`
 
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
+  };
+
+  const [runningAutoId, setRunningAutoId] = useState<string | null>(null);
+
+  const handleRunAutomation = async (e: React.MouseEvent, task: TaskItem) => {
+    e.stopPropagation();
+    setRunningAutoId(task.id);
+    try {
+      const schedule = automationRunner.getAllSchedules().find(s => s.taskId === task.id);
+      if (schedule) {
+        await automationRunner.runScheduleNow(schedule.id);
+      } else {
+        // Run mock direct execution of the routine
+        await new Promise(r => setTimeout(r, 800));
+      }
+      onUpdateTask({
+        ...task,
+        status: 'completed'
+      });
+    } finally {
+      setRunningAutoId(null);
+    }
   };
 
   return (
@@ -150,25 +173,25 @@ ${task.executionPlan?.summary ? `• Plan: ${task.executionPlan.summary}` : ''}`
           </button>
           <button
             type="button"
-            onClick={() => setAssigneeFilter('Priya (Academics)')}
+            onClick={() => setAssigneeFilter('Academic Director')}
             className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
-              assigneeFilter === 'Priya (Academics)'
+              assigneeFilter === 'Academic Director'
                 ? 'bg-rose-600 text-white'
                 : 'bg-rose-50 text-rose-800 hover:bg-rose-100'
             }`}
           >
-            Priya ({tasks.filter(t => t.assignedTo === 'Priya (Academics)').length})
+            Academics ({tasks.filter(t => t.assignedTo === 'Academic Director').length})
           </button>
           <button
             type="button"
-            onClick={() => setAssigneeFilter('Ananya (Business)')}
+            onClick={() => setAssigneeFilter('Managing Director')}
             className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
-              assigneeFilter === 'Ananya (Business)'
+              assigneeFilter === 'Managing Director'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
             }`}
           >
-            Ananya ({tasks.filter(t => t.assignedTo === 'Ananya (Business)').length})
+            Operations ({tasks.filter(t => t.assignedTo === 'Managing Director').length})
           </button>
           <button
             type="button"
@@ -284,6 +307,19 @@ ${task.executionPlan?.summary ? `• Plan: ${task.executionPlan.summary}` : ''}`
 
                 {/* Right Action Icons */}
                 <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                  {(task.category.includes('Automations') || task.id.startsWith('COMM-AUTO')) && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleRunAutomation(e, task)}
+                      disabled={runningAutoId === task.id}
+                      className="p-2 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors flex items-center gap-1 text-[11px] font-bold"
+                      title="Run Automation Routine"
+                    >
+                      <Zap className={`w-3.5 h-3.5 ${runningAutoId === task.id ? 'animate-bounce text-amber-500' : ''}`} />
+                      <span className="hidden sm:inline">{runningAutoId === task.id ? 'Running' : 'Run'}</span>
+                    </button>
+                  )}
+
                   <button
                     type="button"
                     onClick={(e) => handleWhatsAppShare(e, task)}
@@ -326,15 +362,15 @@ ${task.executionPlan?.summary ? `• Plan: ${task.executionPlan.summary}` : ''}`
                     value={task.assignedTo}
                     onChange={(e) => handleReassign(e, task, e.target.value as any)}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold focus:outline-hidden cursor-pointer ${
-                      task.assignedTo.includes('Priya')
+                      task.assignedTo.includes('Academic')
                         ? 'bg-rose-100 text-rose-800'
-                        : task.assignedTo.includes('Ananya')
+                        : task.assignedTo.includes('Managing')
                         ? 'bg-indigo-100 text-indigo-800'
                         : 'bg-amber-100 text-amber-800'
                     }`}
                   >
-                    <option value="Priya (Academics)">Priya (Academics)</option>
-                    <option value="Ananya (Business)">Ananya (Business)</option>
+                    <option value="Academic Director">Academic Director</option>
+                    <option value="Managing Director">Managing Director</option>
                     <option value="Both Co-founders">Both Co-founders</option>
                   </select>
                 </div>

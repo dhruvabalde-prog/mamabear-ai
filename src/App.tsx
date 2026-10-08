@@ -35,6 +35,7 @@ import { CommsHubView } from './components/views/CommsHubView';
 import { SchoolHubView } from './components/views/SchoolHubView';
 import { GoogleSettingsView } from './components/views/GoogleSettingsView';
 import { StoryCardsPageView } from './components/views/StoryCardsPageView';
+import { ConnectedAppsView } from './components/views/ConnectedAppsView';
 import { AdminPanelModal } from './components/AdminPanelModal';
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
   // Full-page task viewing (No dialog boxes - full pager!)
   const [viewingTask, setViewingTask] = useState<TaskItem | null>(null);
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
+  const [showConnectedApps, setShowConnectedApps] = useState<boolean>(false);
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
   const [showStoryCardsPage, setShowStoryCardsPage] = useState<boolean>(false);
   const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
@@ -391,6 +393,20 @@ export default function App() {
             onSaveConfig={handleSaveSetup}
             onCancel={() => setShowSetupModal(false)}
           />
+        ) : showConnectedApps ? (
+          <ConnectedAppsView
+            onBack={() => setShowConnectedApps(false)}
+            user={googleUser}
+            hasToken={hasGoogleToken}
+            onAuthSuccess={(u, t) => {
+              setGoogleUser(u);
+              setHasGoogleToken(!!t);
+            }}
+            onAuthLogout={() => {
+              setGoogleUser(null);
+              setHasGoogleToken(false);
+            }}
+          />
         ) : showGooglePortal ? (
           <GoogleSettingsView
             user={googleUser}
@@ -407,6 +423,10 @@ export default function App() {
             baileysStatus={baileysStatus}
             onConnectBaileys={handleConnectBaileys}
             onDisconnectBaileys={handleDisconnectBaileys}
+            onOpenConnectedApps={() => {
+              setShowGooglePortal(false);
+              setShowConnectedApps(true);
+            }}
           />
         ) : viewingTask ? (
           <TaskDetailPage
@@ -508,6 +528,9 @@ export default function App() {
                 baileysStatus={baileysStatus}
                 onConnectBaileys={handleConnectBaileys}
                 onDisconnectBaileys={handleDisconnectBaileys}
+                onOpenConnectedApps={() => {
+                  setShowConnectedApps(true);
+                }}
               />
             )}
           </>

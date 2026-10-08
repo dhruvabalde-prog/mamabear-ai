@@ -45,9 +45,9 @@ async function startServer() {
         });
       }
 
-      const prompt = `You are an expert Preschool Operational & Academic Advisor assisting two 32-33 year old female co-founders (both have 3-year-old toddlers) launching Maple Bear Canadian Pre-School in Subhash Nagar, Kota, Rajasthan.
-They paid the franchise signing amount today and have 60 days to launch.
-Founder roles: Priya (Academics & Care) and Ananya (Business & Operations).
+      const prompt = `You are an expert Preschool Operational & Academic Advisor assisting educational founders launching Maple Bear Canadian Pre-School in Subhash Nagar, Kota, Rajasthan.
+They paid the franchise signing amount and have 60 days to launch.
+Founder role target: ${role === 'academics' ? 'Academic Director' : role === 'business' ? 'Managing Director' : 'Co-Founders'}.
 
 Task Title: "${taskTitle}"
 Role Target: ${role}
@@ -61,7 +61,7 @@ Provide a highly concrete, minimal-fluff, actionable plan in JSON format with:
   "steps": ["Actionable step 1", "Actionable step 2", "Actionable step 3", "Actionable step 4"],
   "checklist": ["Clear checkbox item 1", "Clear checkbox item 2", "Clear checkbox item 3"],
   "draftMessage": "Ready-to-send WhatsApp / Email text for vendor or parent or teacher",
-  "founderTips": "Specific practical tip considering Kota realities or their 3yo toddlers"
+  "founderTips": "Specific practical tip considering Kota realities and early childhood safety"
 }`;
 
       const response = await ai.models.generateContent({
@@ -83,7 +83,7 @@ Provide a highly concrete, minimal-fluff, actionable plan in JSON format with:
           "Cross-reference Maple Bear Canadian branch guidelines",
           "Coordinate directly with Subhash Nagar site team",
           "Sync status with co-founder via shared bridge",
-          "Test with 3yo toddlers for safety clearance"
+          "Test with toddlers for safety clearance"
         ],
         checklist: [
           "Canadian curriculum standard check",
@@ -102,7 +102,7 @@ Provide a highly concrete, minimal-fluff, actionable plan in JSON format with:
       const { parentName, childName, childAge, parentBackground, interestGrade } = req.body;
       if (!ai) {
         return res.json({
-          response: `Dear ${parentName},\n\nThank you for reaching out to Maple Bear Canadian Pre-School, Subhash Nagar, Kota! We are delighted to welcome ${childName} (Age ${childAge}) for ${interestGrade || 'Pre-School'}. As fellow mothers of 3-year-olds in Kota, we designed our center with global Canadian early childhood immersion, bilingual play, and zero-stress inquiry learning. We invite you for a personalized campus tour this week at Subhash Nagar.\n\nWarm regards,\nPriya & Ananya\nCo-Founders, Maple Bear Subhash Nagar Kota`
+          response: `Dear ${parentName},\n\nThank you for reaching out to Maple Bear Canadian Pre-School, Subhash Nagar, Kota! We are delighted to welcome ${childName} (Age ${childAge}) for ${interestGrade || 'Pre-School'}. We designed our center with global Canadian early childhood immersion, bilingual play, and zero-stress inquiry learning. We invite you for a personalized campus tour this week at Subhash Nagar.\n\nWarm regards,\nAdmissions Team\nMaple Bear Subhash Nagar Kota`
         });
       }
 
@@ -112,7 +112,7 @@ Child Name: ${childName}
 Child Age: ${childAge}
 Parent Background: ${parentBackground || 'Doctor / Coaching Faculty in Kota'}
 Target Class: ${interestGrade || 'Nursery'}
-Tone: Warm, executive, reassuring (both founders are 32-33 yr old mothers of 3yos themselves). Emphasize Canadian play-based bilingual learning and child safety in Subhash Nagar. Under 130 words.`;
+Tone: Warm, executive, reassuring. Emphasize Canadian play-based bilingual learning and child safety in Subhash Nagar. Under 130 words.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
@@ -131,7 +131,7 @@ Tone: Warm, executive, reassuring (both founders are 32-33 yr old mothers of 3yo
   app.post('/api/ai/agentic-clarify', async (req, res) => {
     try {
       const { question, selectedOption, activeFounder, customAnswer } = req.body;
-      const founderName = activeFounder === 'academics' ? 'Priya Sharma (Academics)' : 'Ananya Verma (Business)';
+      const founderName = activeFounder === 'academics' ? 'Academic Director' : 'Managing Director';
       
       if (!ai) {
         return res.json({
@@ -152,7 +152,7 @@ Answer/Selection: "${selectedOption || customAnswer}"
 
 Provide an immediate, highly concrete tactical response in JSON:
 {
-  "insight": "1-2 sentence executive punchy feedback with mom-friendly clarity",
+  "insight": "1-2 sentence executive punchy feedback with clear clarity",
   "nextSteps": ["Specific action step 1", "Specific action step 2", "Specific action step 3"],
   "draftMessage": "Ready-to-dispatch WhatsApp or Email update for team/vendor/partner"
 }`;
@@ -181,27 +181,26 @@ Provide an immediate, highly concrete tactical response in JSON:
   app.post('/api/ai/mamabear-chat', async (req, res) => {
     try {
       const { message, history, activeFounder, momMode } = req.body;
-      const founderName = activeFounder === 'academics' ? 'Priya (Academics & Care)' : 'Ananya (Business & Operations)';
+      const founderName = activeFounder === 'academics' ? 'Academic Director' : 'Managing Director';
       
       if (!ai) {
         return res.json({
-          reply: `Hi ${founderName.split(' ')[0]}! I'm MamaBear AI 🐻. For Subhash Nagar, Kota, keep outdoor tasks to early morning before temperatures rise, and remember to test all classroom materials with Aarav & Myra (3yo). What should we tackle next?`,
+          reply: `Hi ${founderName}! I'm MamaBear AI 🐻. For Subhash Nagar, Kota, keep outdoor tasks to early morning before temperatures rise, and ensure all classroom materials undergo rigorous child safety checks. What should we tackle next?`,
           actionType: 'task',
           suggestedActions: [
             "Draft WhatsApp message to Kota parents",
             "Generate Kota Stone finishing checklist",
-            "Review 3yo nap schedule with Aarav & Myra",
+            "Review toddler daily nap schedule",
             "Create weekend Campus Tour agenda"
           ]
         });
       }
 
-      const systemPrompt = `You are MamaBear AI 🐻, the playful, hyper-efficient, on-brand AI Chief of Staff for two 32-33 year old female co-founders (Priya - Academics & Care, Ananya - Business & Operations) launching Maple Bear Canadian Pre-School in Subhash Nagar, Kota, Rajasthan.
+      const systemPrompt = `You are MamaBear AI 🐻, the playful, hyper-efficient, on-brand AI Chief of Staff for the founders (Academic Director & Managing Director) launching Maple Bear Canadian Pre-School in Subhash Nagar, Kota, Rajasthan.
 Context:
-- They gave the ₹15L franchise signing amount today and have 60 days to launch.
-- Both have 3-year-old toddlers (Aarav is Priya's boy, Myra is Ananya's girl).
+- They gave the ₹15L franchise signing amount and have 60 days to launch.
 - Location: Subhash Nagar, Kota (opposite Talwandi, near coaching institutes like Allen/Resonance; parents are doctors and coaching faculties).
-- Core Tone: High clarity, minimal fluff, warm, supportive of working mother reality, zero AI slop, tactical, action-oriented.
+- Core Tone: High clarity, minimal fluff, warm, professional, zero AI slop, tactical, action-oriented.
 - Mom Mode is currently: ${momMode ? 'ACTIVE (Keep advice extra concise and toddler-friendly)' : 'STANDARD'}.
 - Active user speaking to you: ${founderName}.
 
@@ -228,7 +227,7 @@ Output JSON format:
         suggestedActions: [
           "Check Subhash Nagar site progress",
           "Draft parent tour confirmation",
-          "Check Aarav & Myra test ratings"
+          "Check toddler safety ratings"
         ]
       });
     }
@@ -319,6 +318,30 @@ Output JSON format:
       baileysManager.dismissCard(cardId);
       res.json({ success: true });
     } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/baileys/recent-messages', async (req, res) => {
+    try {
+      const { recent_messages } = req.body;
+      const { baileysManager } = await import('./src/services/baileysService');
+      if (Array.isArray(recent_messages)) {
+        for (const msg of recent_messages) {
+          const formattedEvent = {
+            id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            chatId: `${msg.from.toLowerCase().replace(/[^a-z0-9]/g, '')}@s.whatsapp.net`,
+            senderName: msg.from,
+            text: msg.text || '',
+            fromMe: Boolean(msg.is_user),
+            timestamp: msg.timestamp ? new Date(msg.timestamp).getTime() : Date.now()
+          };
+          baileysManager.synthesizeStreamIntoStoryCard(formattedEvent);
+        }
+      }
+      res.json({ success: true, story_cards: baileysManager.getStoryCards() });
+    } catch (e: any) {
+      console.error('Error in /api/baileys/recent-messages:', e);
       res.status(500).json({ error: e.message });
     }
   });

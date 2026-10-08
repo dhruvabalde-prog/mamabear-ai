@@ -319,9 +319,9 @@ export async function listGmailMessages(
         threadId: 'th-1',
         from: 'Dr. Radhika Mehta <radhika.mehta@nmch-kota.in>',
         subject: 'Inquiry regarding 3yo Toddler Section & Canadian Curriculum for Twins Kabir & Vivaan',
-        snippet: 'Dear Priya & Ananya, We are looking for nursery admission for our 3-year-old twin boys. We would love to book a Friday 10 AM walkthrough.',
+        snippet: 'Dear Admissions Team, We are looking for nursery admission for our 3-year-old twin boys. We would love to book a Friday 10 AM walkthrough.',
         date: 'Today, 10:15 AM',
-        body: 'Dear Priya & Ananya,\n\nWe are looking for pre-school admission for our 3-year-old twin boys Kabir and Vivaan. We both practice at New Medical College Hospital in Kota. We were delighted to hear about the Canadian inquiry-based play curriculum in Subhash Nagar. Is Friday morning at 10:00 AM suitable for a personal tour?\n\nWarm regards,\nDr. Radhika & Dr. Amit Mehta',
+        body: 'Dear Admissions Team,\n\nWe are looking for pre-school admission for our 3-year-old twin boys Kabir and Vivaan. We both practice at New Medical College Hospital in Kota. We were delighted to hear about the Canadian inquiry-based play curriculum in Subhash Nagar. Is Friday morning at 10:00 AM suitable for a personal tour?\n\nWarm regards,\nDr. Radhika & Dr. Amit Mehta',
         unread: true
       },
       {
@@ -329,9 +329,9 @@ export async function listGmailMessages(
         threadId: 'th-2',
         from: 'Er. Rajesh Khandelwal <rajesh.k@allen-kota.ac.in>',
         subject: 'Fee schedule & Canadian Phonics kit query for Anvi (2.5yo)',
-        snippet: 'Namaste Priya ji, Loved our visit yesterday. Please share the fee schedule and day care timing options for faculty children.',
+        snippet: 'Namaste Director, Loved our visit yesterday. Please share the fee schedule and day care timing options for faculty children.',
         date: 'Yesterday, 4:45 PM',
-        body: 'Namaste Priya ji & Ananya ji,\n\nI visited the Subhash Nagar campus yesterday and was very impressed by the anti-pinch door safety and Canadian birchwood reading corner. Could you please send across the Term 1 fee breakdown and the afternoon day-care schedule?\n\nRegards,\nEr. Rajesh Khandelwal\nSenior Faculty, Allen Career Institute Kota',
+        body: 'Namaste Academic Director & Managing Director,\n\nI visited the Subhash Nagar campus yesterday and was very impressed by the anti-pinch door safety and Canadian birchwood reading corner. Could you please send across the Term 1 fee breakdown and the afternoon day-care schedule?\n\nRegards,\nEr. Rajesh Khandelwal\nSenior Faculty, Allen Career Institute Kota',
         unread: true
       },
       {
@@ -339,9 +339,9 @@ export async function listGmailMessages(
         threadId: 'th-3',
         from: 'Maple Bear South Asia Support <operations@maplebear.in>',
         subject: 'Official Confirmation: ₹15L Signing Amount Received & 60-Day Launch Toolkit Dispatched',
-        snippet: 'Congratulations Priya & Ananya! Your franchise agreement for Subhash Nagar, Kota is active. Access your Canadian curriculum assets here.',
+        snippet: 'Congratulations Partners! Your franchise agreement for Subhash Nagar, Kota is active. Access your Canadian curriculum assets here.',
         date: 'Sep 25, 9:00 AM',
-        body: 'Dear Priya & Ananya,\n\nWe warmly welcome you to the Maple Bear Canadian family! We have confirmed the ₹15,00,000 signing remittance for the Subhash Nagar, Kota center. Your 60-day launch roadmap, teacher training modules, and classroom blueprint packages have been dispatched to your central Google Drive folder.\n\nBest wishes,\nMaple Bear Franchise Operations Team',
+        body: 'Dear Preschool Partners Leadership,\n\nWe warmly welcome you to the Maple Bear Canadian family! We have confirmed the ₹15,00,000 signing remittance for the Subhash Nagar, Kota center. Your 60-day launch roadmap, teacher training modules, and classroom blueprint packages have been dispatched to your central Google Drive folder.\n\nBest wishes,\nMaple Bear Franchise Operations Team',
         unread: false
       },
       {
@@ -349,9 +349,9 @@ export async function listGmailMessages(
         threadId: 'th-4',
         from: 'Hadoti Constructions Kota <hadoti.stone@kota.in>',
         subject: 'Kota Stone Polishing & Anti-Skid Finish for Toddler Explorer Room',
-        snippet: 'Respected Ananya madam, our team has completed the mirror polish in Zone 1. We will begin Zone 2 tomorrow morning at 8:00 AM.',
+        snippet: 'Respected Managing Director, our team has completed the mirror polish in Zone 1. We will begin Zone 2 tomorrow morning at 8:00 AM.',
         date: 'Sep 24, 6:30 PM',
-        body: 'Respected Ananya madam,\n\nOur masonry team has finished the smooth matte edge rounding on the Kota stone flooring for Zone 1 and 2. We will apply the zero-chemical water repellent sealant tomorrow before 10 AM to beat the afternoon heat.\n\nThanks,\nMaster Craftsman Suresh, Hadoti Constructions',
+        body: 'Respected Managing Director,\n\nOur masonry team has finished the smooth matte edge rounding on the Kota stone flooring for Zone 1 and 2. We will apply the zero-chemical water repellent sealant tomorrow before 10 AM to beat the afternoon heat.\n\nThanks,\nMaster Craftsman Suresh, Hadoti Constructions',
         unread: false
       }
     ];

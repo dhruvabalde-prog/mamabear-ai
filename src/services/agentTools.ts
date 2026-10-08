@@ -36,8 +36,8 @@ export interface ClarifyingQuestion {
 
 /**
  * Computes what needs to be done RIGHT NOW based on:
- * - Active Co-Founder (Priya vs Ananya)
- * - Current Local Time & 3yo Toddler Routine (Aarav & Myra)
+ * - Active Co-Founder (Academic Director vs Managing Director)
+ * - Current Local Time & Toddler Routine
  * - 60-day launch countdown milestones
  */
 export function getAgenticPriorityNow(role: ActiveFounderRole, config?: any): {

@@ -250,8 +250,30 @@ class BaileysManager {
    * 5. REMINDERS & DEADLINES
    * 6. CRISIS / URGENCY TRIAGE
    */
-  private synthesizeStreamIntoStoryCard(event: LiveMessageEvent) {
+  public synthesizeStreamIntoStoryCard(event: LiveMessageEvent) {
     const lower = event.text.toLowerCase();
+
+    // Specific match for Rohan or budget check
+    if (lower.includes('budget') && (lower.includes('check') || lower.includes('did you') || lower.includes('review'))) {
+      const card: StoryCardPayload = {
+        card_id: `card_rohan_${Date.now()}`,
+        chat_id: event.chatId || '919876543210@s.whatsapp.net',
+        contact_name: event.senderName || 'Rohan',
+        category: 'UNANSWERED_PING',
+        urgency: 'medium',
+        headline: 'Unanswered check-in on budget sheet',
+        context_summary: `${event.senderName || 'Rohan'} asked for your feedback on the revised budget 3 hours ago.`,
+        ai_proposal: `I can send ${event.senderName || 'Rohan'} a quick update confirming you're reviewing it and will share final thoughts by 6 PM.\nThis keeps momentum without you having to drop current focus.`,
+        pre_drafted_action: {
+          action_type: 'SEND_WHATSAPP_REPLY',
+          reply_text: `Hey ${event.senderName || 'Rohan'}, reviewing the revised numbers now. Will share my notes by 6 PM today.`,
+          action_payload: { target_jid: event.chatId || '919876543210@s.whatsapp.net' }
+        },
+        suggested_background_theme: 'amber'
+      };
+      this.addStoryCard(card);
+      return;
+    }
 
     // 1. GHOSTING / UNREPLIED PING or Inbound Inquiry
     if (!event.fromMe && (lower.includes('?') || lower.includes('when') || lower.includes('did you') || lower.includes('update') || lower.includes('please confirm'))) {

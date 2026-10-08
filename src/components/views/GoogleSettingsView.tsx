@@ -33,6 +33,7 @@ interface GoogleSettingsViewProps {
   baileysStatus?: BaileysConnectionStatus;
   onConnectBaileys?: () => void;
   onDisconnectBaileys?: () => void;
+  onOpenConnectedApps?: () => void;
 }
 
 export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
@@ -43,7 +44,8 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
   onClose,
   baileysStatus = { status: 'disconnected' },
   onConnectBaileys = () => {},
-  onDisconnectBaileys = () => {}
+  onDisconnectBaileys = () => {},
+  onOpenConnectedApps
 }) => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -258,6 +260,32 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
             onDisconnect={onDisconnectBaileys}
           />
         </div>
+
+        {/* Connected Apps & System Permissions Full-Page Portal Link */}
+        {onOpenConnectedApps && (
+          <div className="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={onOpenConnectedApps}
+              className="w-full p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between hover:opacity-95 transition-all cursor-pointer shadow-xs"
+            >
+              <div className="flex items-center gap-3 text-left">
+                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-white">
+                    Connected Apps & System Permissions
+                  </h3>
+                  <p className="text-[11px] text-slate-300">
+                    Toggle Sheets, Docs, Slides, Forms, Maps, Calls, Camera & Mic
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
+          </div>
+        )}
 
         {/* Work / Co-founder Accounts & Auto-Access */}
         <div className="pt-3 border-t border-slate-100 space-y-2">

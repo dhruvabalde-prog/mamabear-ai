@@ -27,13 +27,13 @@ export const WalkieTalkieModal: React.FC<WalkieTalkieModalProps> = ({
   const [typedMessage, setTypedMessage] = useState<string>('');
   const [playingNudgeId, setPlayingNudgeId] = useState<string | null>(null);
 
-  const senderName = activeFounder === 'academics' ? 'Priya (Academics)' : 'Ananya (Business)';
-  const recipientName = activeFounder === 'academics' ? 'Ananya (Business)' : 'Priya (Academics)';
+  const senderName = activeFounder === 'academics' ? 'Academic Director' : 'Managing Director';
+  const recipientName = activeFounder === 'academics' ? 'Managing Director' : 'Academic Director';
 
   // Quick 1-tap rapid voice nudges
   const quickTemplates = [
     { text: 'At Subhash Nagar site right now inspecting Kota stone finishing!', tag: 'Site Visit' as const, icon: '🏛️' },
-    { text: 'Aarav & Myra just tested the new sensory blocks - 5/5 stars!', tag: 'Toddler' as const, icon: '🧸' },
+    { text: 'Children just tested the new sensory blocks - 5/5 stars!', tag: 'Toddler' as const, icon: '🧸' },
     { text: 'Senior Allen faculty parent just called for Nursery tour this Saturday.', tag: 'Parent' as const, icon: '📞' },
     { text: 'Fire Department physical inspection passed without objection!', tag: 'Franchise' as const, icon: '🔥' },
     { text: 'Signing amount receipt and Canadian curriculum manuals confirmed!', tag: 'Celebration' as const, icon: '🎉' }
@@ -142,7 +142,7 @@ export const WalkieTalkieModal: React.FC<WalkieTalkieModalProps> = ({
           </div>
 
           {nudges.map((nudge) => {
-            const isMe = nudge.from.includes(activeFounder === 'academics' ? 'Priya' : 'Ananya');
+            const isMe = nudge.from.includes(activeFounder === 'academics' ? 'Academic' : 'Managing');
             return (
               <div
                 key={nudge.id}

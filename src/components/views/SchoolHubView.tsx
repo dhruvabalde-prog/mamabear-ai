@@ -47,6 +47,7 @@ interface SchoolHubViewProps {
   baileysStatus?: BaileysConnectionStatus;
   onConnectBaileys?: () => void;
   onDisconnectBaileys?: () => void;
+  onOpenConnectedApps?: () => void;
 }
 
 export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
@@ -59,25 +60,26 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
   onUpdateZoneProgress,
   setupConfig,
   staff = [],
-  onAddStaff,
-  onUpdateStaffVerification,
+  onAddStaff = () => {},
+  onUpdateStaffVerification = () => {},
   expenses = [],
-  onAddExpense,
+  onAddExpense = () => {},
   academicPrograms = [],
-  onSaveAcademicProgram,
+  onSaveAcademicProgram = () => {},
   vendors = [],
-  onAddVendor,
+  onAddVendor = () => {},
   reviews = [],
-  onAddReview,
-  handoff,
-  onUpdateHandoff,
+  onAddReview = () => {},
+  handoff = null,
+  onUpdateHandoff = () => {},
   googleUser = null,
   hasGoogleToken = false,
   onAuthSuccess = () => {},
   onAuthLogout = () => {},
   baileysStatus = { status: 'disconnected' },
   onConnectBaileys = () => {},
-  onDisconnectBaileys = () => {}
+  onDisconnectBaileys = () => {},
+  onOpenConnectedApps
 }) => {
   const [selectedSection, setSelectedSection] = useState<string | null>(initialSubSection || null);
 
@@ -108,19 +110,19 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
       subtitle: 'Maple Bear early childhood immersion, Toddler & Nursery units',
       icon: GraduationCap,
       color: 'bg-red-500',
-      tag: 'Priya’s Domain',
+      tag: 'Academics',
       accent: 'border-red-200 hover:border-red-400',
       badge: 'Bilingual ECE'
     },
     {
       id: 'toddlers',
       title: 'Mom-Founder Toddler Lab',
-      subtitle: 'Aarav & Myra (3yo) play-testing, nap-time sync & mom guilt-buster',
+      subtitle: 'Early childhood play-testing, nap-time sync & toddler wellbeing',
       icon: Baby,
       color: 'bg-purple-500',
-      tag: 'Aarav & Myra',
+      tag: 'Toddler Lab',
       accent: 'border-purple-200 hover:border-purple-400',
-      badge: 'Our 3-Year-Olds'
+      badge: '3-Year-Olds'
     },
     {
       id: 'finances',
@@ -130,7 +132,7 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
       color: 'bg-blue-500',
       tag: '₹15L Paid',
       accent: 'border-blue-200 hover:border-blue-400',
-      badge: 'Ananya’s Domain'
+      badge: 'Operations'
     },
     {
       id: 'staff',
@@ -246,6 +248,7 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
               baileysStatus={baileysStatus}
               onConnectBaileys={onConnectBaileys}
               onDisconnectBaileys={onDisconnectBaileys}
+              onOpenConnectedApps={onOpenConnectedApps}
             />
           )}
         </div>
@@ -324,7 +327,7 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
           </div>
           <div>
             <h4 className="text-sm font-bold text-purple-950">Mom-Founders Dual Balance</h4>
-            <p className="text-xs text-purple-700">Aarav & Myra (3 yrs old) are currently scheduled for lunch & nap playgroup at 1:30 PM</p>
+            <p className="text-xs text-purple-700">Toddler playgroup and nap routines are scheduled for 1:30 PM</p>
           </div>
         </div>
         <button

@@ -216,4 +216,37 @@ export interface BaileysConnectionStatus {
   name?: string;
 }
 
+export interface ConnectedAppItem {
+  id: string; // 'gmail' | 'calendar' | 'drive' | 'docs' | 'sheets' | 'slides' | 'tasks' | 'keep' | 'notebook' | 'forms' | 'maps' | 'phone_call' | 'camera' | 'mic' | 'draw_overlay' | 'contacts';
+  name: string;
+  category: 'google_workspace' | 'device_hardware' | 'automation';
+  icon: string;
+  description: string;
+  enabled: boolean;
+  requiredScope?: string;
+  status: 'connected' | 'permission_granted' | 'disabled' | 'not_connected';
+}
+
+export interface AutomationSchedule {
+  id: string;
+  taskId: string;
+  title: string;
+  cronExpression: string;
+  frequencyText: string;
+  skillName: string;
+  enabled: boolean;
+  lastRun?: string;
+  nextRun?: string;
+  status: 'active' | 'idle' | 'running';
+}
+
+export interface RecentMessagePayload {
+  from: string;
+  is_user: boolean;
+  timestamp: string;
+  text: string;
+  status?: string;
+}
+
+
 
