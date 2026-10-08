@@ -237,6 +237,22 @@ export const GoogleSettingsView: React.FC<GoogleSettingsViewProps> = ({
           )}
         </div>
 
+        {/* Immediate OAuth Error Banner */}
+        {errorMsg && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-2.5 text-xs text-red-800 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
+            <div className="space-y-1">
+              <span className="font-bold block">OAuth Authentication Notice</span>
+              <p className="text-[11px] leading-relaxed text-red-700">{errorMsg}</p>
+              {errorMsg.includes('unauthorized_client') || errorMsg.includes('authorized domain') ? (
+                <p className="text-[10px] text-red-600 font-mono mt-1">
+                  Add this Vercel domain to Firebase Console &gt; Authentication &gt; Settings &gt; Authorized Domains.
+                </p>
+              ) : null}
+            </div>
+          </div>
+        )}
+
         {/* WhatsApp & Phone Permissions Card inside Settings */}
         <div className="pt-3 border-t border-slate-100 space-y-2.5">
           <div className="flex items-center justify-between">

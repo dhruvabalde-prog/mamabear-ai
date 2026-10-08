@@ -11,11 +11,75 @@ interface AcademicsViewProps {
   isLoading?: boolean;
 }
 
+const DEFAULT_ACADEMIC_PROGRAMS: AcademicProgram[] = [
+  {
+    id: 'prog-1',
+    slug: 'toddlers',
+    name: 'Toddlers (Early Discovery)',
+    ageBracket: '1.5 – 2.5 Years',
+    icon: '🧸',
+    description: 'Bilingual Canadian immersion focused on sensory exploration, gentle separation confidence, and motor skill development.',
+    learningCenters: ['Sensory Water & Sand Table', 'Soft Block Building Nook', 'Texture & Discovery Wall', 'Quiet Cozy Picture Book Corner'],
+    weeklyThemes: [
+      { week: 1, title: 'Welcome to Maple Bear & Classroom Routines' },
+      { week: 2, title: 'Colors, Shapes & Natural Kota Stones' },
+      { week: 3, title: 'Friendly Animal Sounds & Canadian Wildlife' },
+      { week: 4, title: 'Rhythm, Movement & Toddler Music' }
+    ]
+  },
+  {
+    id: 'prog-2',
+    slug: 'nursery',
+    name: 'Nursery (Active Inquirers)',
+    ageBracket: '2.5 – 3.5 Years',
+    icon: '🎨',
+    description: 'Canadian Early Childhood framework fostering expressive language, peer collaboration, and structured dramatic play.',
+    learningCenters: ['Canadian Story Sack & Reading Hub', 'Dramatic Role-play Grocery & Kitchen', 'Natural Loose-parts Exploration Station', 'Fine-motor Scissor & Lacing Center'],
+    weeklyThemes: [
+      { week: 1, title: 'My Family, My Teachers & New Friends' },
+      { week: 2, title: 'Our Classroom Environment & Helping Hands' },
+      { week: 3, title: 'Plants, Trees & Native Kota Flora' },
+      { week: 4, title: 'Water Play, Sinks & Floats Discovery' }
+    ]
+  },
+  {
+    id: 'prog-3',
+    slug: 'junior-kg',
+    name: 'Junior KG (Foundational Inquiry)',
+    ageBracket: '3.5 – 4.5 Years',
+    icon: '🔍',
+    description: 'Emergent phonological awareness, early Canadian math manipulatives, and hands-on environmental exploration.',
+    learningCenters: ['Phonological Sound Box Station', 'Math Counter & Patterning Shelves', 'Junior Science Discovery Lab', 'Art Easel & Finger-painting Studio'],
+    weeklyThemes: [
+      { week: 1, title: 'Letters, Sounds & Story Wonder' },
+      { week: 2, title: 'Counting, Sorting & Canadian Seasons' },
+      { week: 3, title: 'Weather Patterns & Kota Sun Observations' },
+      { week: 4, title: 'Community Helpers & Health Heroes' }
+    ]
+  },
+  {
+    id: 'prog-4',
+    slug: 'senior-kg',
+    name: 'Senior KG (Graduation Readiness)',
+    ageBracket: '4.5 – 6.0 Years',
+    icon: '🎓',
+    description: 'Bilingual fluency, emergent writing, mathematical problem-solving, and socio-emotional leadership.',
+    learningCenters: ['Author & Illustrator Writing Workshop', 'STEM Robotic & Balance Center', 'World Geography & Cultural Exploration', 'Gross-motor Agility & Sports Zone'],
+    weeklyThemes: [
+      { week: 1, title: 'Inquiry-led Story Writing & Journaling' },
+      { week: 2, title: 'Mathematical Measurement & Balance Scales' },
+      { week: 3, title: 'Our World, Continents & Ocean Habitats' },
+      { week: 4, title: 'Celebrations, Canadian Traditions & Rajasthan Heritage' }
+    ]
+  }
+];
+
 export const AcademicsView: React.FC<AcademicsViewProps> = ({
   programs = [],
   onSaveProgram,
   isLoading = false
 }) => {
+  const activePrograms = programs.length > 0 ? programs : DEFAULT_ACADEMIC_PROGRAMS;
   const [selectedSlug, setSelectedSlug] = useState<string>('nursery');
   const [showAddCenterModal, setShowAddCenterModal] = useState(false);
   const [newCenterInput, setNewCenterInput] = useState('');
@@ -34,21 +98,7 @@ export const AcademicsView: React.FC<AcademicsViewProps> = ({
     );
   }
 
-  if (programs.length === 0) {
-    return (
-      <div className="p-8 bg-white rounded-3xl border border-slate-200 text-center space-y-4">
-        <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto text-2xl">
-          🍁
-        </div>
-        <div>
-          <h2 className="text-base font-extrabold text-slate-900">No Curriculum Modules Available</h2>
-          <p className="text-xs text-slate-500 mt-1">Curriculum units have not been seeded or loaded from Supabase.</p>
-        </div>
-      </div>
-    );
-  }
-
-  const currentProgram = programs.find(p => p.slug === selectedSlug) || programs[0];
+  const currentProgram = activePrograms.find(p => p.slug === selectedSlug) || activePrograms[0];
 
   const handleAddLearningCenter = () => {
     if (!newCenterInput.trim() || !onSaveProgram) return;
@@ -82,7 +132,7 @@ export const AcademicsView: React.FC<AcademicsViewProps> = ({
 
       {/* Grade Selector Tabs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        {programs.map((g) => (
+        {activePrograms.map((g) => (
           <button
             key={g.slug}
             type="button"

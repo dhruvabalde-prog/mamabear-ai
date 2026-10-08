@@ -11,12 +11,12 @@ interface FacilityViewProps {
 }
 
 export const FacilityView: React.FC<FacilityViewProps> = ({
-  zones,
+  zones = [],
   onUpdateZoneProgress
 }) => {
   const totalAllocated = zones.reduce((acc, z) => acc + z.budgetAllocated, 0);
   const totalSpent = zones.reduce((acc, z) => acc + z.budgetSpent, 0);
-  const avgProgress = Math.round(zones.reduce((acc, z) => acc + z.progress, 0) / zones.length);
+  const avgProgress = zones.length > 0 ? Math.round(zones.reduce((acc, z) => acc + z.progress, 0) / zones.length) : 0;
 
   return (
     <div className="space-y-4 pb-16">

@@ -9,6 +9,8 @@ import {
   INITIAL_NUDGES, 
   INITIAL_INQUIRIES, 
   INITIAL_FACILITY_ZONES,
+  INITIAL_STAFF,
+  INITIAL_EXPENSES,
   DEFAULT_SETUP_CONFIG,
   getCoFounders
 } from './data/initialData';
@@ -88,8 +90,8 @@ export default function App() {
   const [nudges, setNudges] = useState<VoiceNudge[]>(INITIAL_NUDGES);
   const [inquiries, setInquiries] = useState<ParentInquiry[]>(INITIAL_INQUIRIES);
   const [facilityZones, setFacilityZones] = useState<FacilityZone[]>(INITIAL_FACILITY_ZONES);
-  const [staff, setStaff] = useState<StaffMember[]>([]);
-  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
+  const [staff, setStaff] = useState<StaffMember[]>(INITIAL_STAFF);
+  const [expenses, setExpenses] = useState<ExpenseItem[]>(INITIAL_EXPENSES);
   const [academicPrograms, setAcademicPrograms] = useState<AcademicProgram[]>([]);
   const [vendors, setVendors] = useState<LocalVendor[]>([]);
   const [reviews, setReviews] = useState<QualityReview[]>([]);
