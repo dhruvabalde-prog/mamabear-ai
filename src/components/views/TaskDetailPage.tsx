@@ -65,7 +65,13 @@ export const TaskDetailPage: React.FC<TaskDetailPageProps> = ({
         })
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch (e) {
+        data = {};
+      }
       
       const newPlan: TaskItem['executionPlan'] = {
         summary: data.summary || `Execution plan ready for "${task.title}".`,
@@ -207,7 +213,13 @@ export const TaskDetailPage: React.FC<TaskDetailPageProps> = ({
           text
         })
       });
-      const data = await res.json();
+      let data: any = {};
+      try {
+        const textResp = await res.text();
+        data = JSON.parse(textResp);
+      } catch (e) {
+        data = {};
+      }
       if (data.success) {
         setSyncSuccessMsg('✓ Dispatched update via WhatsApp');
       } else {

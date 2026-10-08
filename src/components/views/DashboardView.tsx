@@ -36,41 +36,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [quickInput, setQuickInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Fallback demo story cards if none generated yet from live stream
-  const activeCards: StoryCard[] = storyCards.length > 0 ? storyCards : [
-    {
-      card_id: 'card_demo_1',
-      chat_id: 'contact_1@s.whatsapp.net',
-      contact_name: 'Dr. Radhika',
-      category: 'UNANSWERED_PING',
-      urgency: 'medium',
-      headline: 'Unanswered inquiry on admissions',
-      context_summary: 'Parent asked about campus tour availability for next weekend 3 hours ago.',
-      ai_proposal: 'I can send a confirmation note offering Saturday 10:30 AM or Sunday 11 AM.\nKeeps enrollment velocity high without manual drafting.',
-      pre_drafted_action: {
-        action_type: 'SEND_WHATSAPP_REPLY',
-        reply_text: 'Namaste Dr. Radhika! We would love to host you. Does Saturday 10:30 AM or Sunday 11 AM work for your visit?',
-        action_payload: {}
-      },
-      suggested_background_theme: 'amber'
-    },
-    {
-      card_id: 'card_demo_2',
-      chat_id: 'vendor_1@s.whatsapp.net',
-      contact_name: 'Hadoti Stone',
-      category: 'TASK_COMMITMENT',
-      urgency: 'critical',
-      headline: 'Site milestone confirmation required',
-      context_summary: 'Flooring contractor is awaiting inspection sign-off on Zone 1 matte finish.',
-      ai_proposal: 'I can confirm you will inspect the non-slip beveling on site by 4 PM today.\nProtects installation schedule and vendor accountability.',
-      pre_drafted_action: {
-        action_type: 'SEND_WHATSAPP_REPLY',
-        reply_text: 'Namaste Suresh ji, will visit site by 4 PM today for the non-slip safety inspection.',
-        action_payload: {}
-      },
-      suggested_background_theme: 'dark-crimson'
-    }
-  ];
+  // Active story cards from live stream (empty by default before messages arrive)
+  const activeCards: StoryCard[] = storyCards;
 
   return (
     <div className="space-y-4 pb-20 max-w-lg mx-auto px-1 sm:px-0">

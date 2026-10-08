@@ -142,80 +142,13 @@ export const INITIAL_FACILITY_ZONES: FacilityZone[] = [
   }
 ];
 
-export const INITIAL_STAFF: StaffMember[] = [
-  {
-    id: 'staff-1',
-    name: 'Sunita Rathore, M.A., B.Ed',
-    role: 'Lead Educator',
-    status: 'Canadian Certified',
-    policeVerified: true,
-    firstAidCertified: true,
-    salary: 32000,
-    assignedClass: 'Nursery (Canadian Nest)',
-    contact: '+91 94142 88990'
-  },
-  {
-    id: 'staff-2',
-    name: 'Meenakshi Jain, NTT',
-    role: 'Early Years Teacher',
-    status: 'Active',
-    policeVerified: true,
-    firstAidCertified: true,
-    salary: 26000,
-    assignedClass: 'Toddler Explorer Room',
-    contact: '+91 98293 44551'
-  },
-  {
-    id: 'staff-3',
-    name: 'Kavita Dave, M.Sc ECE',
-    role: 'Center Head',
-    status: 'Canadian Certified',
-    policeVerified: true,
-    firstAidCertified: true,
-    salary: 45000,
-    assignedClass: 'All Sections / Admin',
-    contact: '+91 99281 66772'
-  },
-  {
-    id: 'staff-4',
-    name: 'Kamla Bai',
-    role: 'Caregiver / Didi',
-    status: 'Active',
-    policeVerified: true,
-    firstAidCertified: true,
-    salary: 14000,
-    assignedClass: 'Toddler Care & Washrooms',
-    contact: '+91 97850 33445'
-  },
-  {
-    id: 'staff-5',
-    name: 'Ram Singh Gurjar',
-    role: 'Security Officer',
-    status: 'Active',
-    policeVerified: true,
-    firstAidCertified: false,
-    salary: 16000,
-    assignedClass: 'Main Security Gate',
-    contact: '+91 96102 55667'
-  },
-  {
-    id: 'staff-6',
-    name: 'Mukesh Choudhary',
-    role: 'Bus Driver',
-    status: 'Active',
-    policeVerified: true,
-    firstAidCertified: true,
-    salary: 18000,
-    assignedClass: 'Van Route 1 (Talwandi - Subhash Nagar)',
-    contact: '+91 94145 77881'
-  }
-];
+export const INITIAL_STAFF: StaffMember[] = [];
 
 export const INITIAL_EXPENSES: ExpenseItem[] = [
   {
     id: 'exp-1',
     category: 'Franchise Signing & Royalty',
-    item: 'Maple Bear Master Franchise Signing Fee (Paid Today!)',
+    item: 'Maple Bear Master Franchise Signing Fee',
     amount: 1500000,
     paidDate: '2026-09-25',
     status: 'Paid',
@@ -225,21 +158,21 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
   {
     id: 'exp-2',
     category: 'Civil & Kota Stone',
-    item: 'Subhash Nagar 9-year Lease Stamp Duty & Security Deposit',
+    item: 'Subhash Nagar Campus Lease Stamp Duty & Security Deposit',
     amount: 600000,
     paidDate: '2026-09-24',
     status: 'Paid',
-    vendor: 'Subhash Nagar Landlord (B.L. Gupta)',
+    vendor: 'Property Lessor',
     authorizedBy: 'Managing Director'
   },
   {
     id: 'exp-3',
     category: 'Civil & Kota Stone',
-    item: 'Civil Renovation Advance & Premium Kota Stone Mirror Polishing',
+    item: 'Civil Renovation Advance & Safety Floor Polishing',
     amount: 350000,
     paidDate: '2026-09-25',
     status: 'Advance Done',
-    vendor: 'Hadoti Constructions & Kota Stone Crafts',
+    vendor: 'Kota Civil & Stone Works',
     authorizedBy: 'Managing Director'
   },
   {

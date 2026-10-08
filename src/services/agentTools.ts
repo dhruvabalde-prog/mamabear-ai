@@ -78,10 +78,10 @@ export function getAgenticPriorityNow(role: ActiveFounderRole, config?: any): {
         toddlerContext: 'Classroom sensory materials will be ready during the tour walkthrough.',
         recommendedTool: 'whatsapp',
         actionData: {
-          recipientName: 'Dr. Radhika Mehta',
-          recipientContact: '919414123456',
-          draftText: `Dear Dr. Radhika Mehta, Warm greetings from ${acadName} at ${schoolName}, ${campus}, ${city}. We are thrilled to confirm your tour for twins Kabir & Vivaan this Friday at 10:00 AM. As a fellow parent of a young child, I look forward to personally walking you through our bilingual immersion and hygiene-certified protocols! See you Friday.`,
-          calendarSummary: 'Tour: Dr. Radhika Mehta (Twins Kabir & Vivaan 3yo)'
+          recipientName: 'Parent Inquiry Lead',
+          recipientContact: '919876543210',
+          draftText: `Dear Parent, Warm greetings from ${acadName} at ${schoolName}, ${campus}, ${city}. We are thrilled to confirm your tour for this Friday at 10:00 AM. We look forward to personally walking you through our bilingual immersion and hygiene-certified protocols! See you Friday.`,
+          calendarSummary: 'Campus Tour: Prospective Parent Walkthrough'
         }
       },
       secondaryActions: [
@@ -101,14 +101,14 @@ export function getAgenticPriorityNow(role: ActiveFounderRole, config?: any): {
           id: 'act-acad-3',
           urgentLevel: 'normal',
           category: 'Franchise & NOC',
-          title: 'Send formal Offer Letter to Lead Educator candidate Sunita Rathore',
+          title: 'Send formal Offer Letter to Lead Educator candidate',
           rationale: 'Candidate passed the mock storytelling audition with distinction; competitive offer required today.',
           toddlerContext: 'Drafting can be done in 10 minutes.',
           recommendedTool: 'gmail',
           actionData: {
-            recipientName: 'Sunita Rathore',
-            recipientContact: 'sunita.rathore@gmail.com',
-            draftText: `Dear Sunita ji,\n\nWe are delighted to extend an offer for the Lead Educator position at ${schoolName}, ${campus}, ${city}. We were inspired by your warmth and storytelling demo. Attached are the terms and pedagogy orientation schedule.\n\nWarmly,\n${acadName} (${acadTitle})`
+            recipientName: 'Educator Candidate',
+            recipientContact: 'educator@school.com',
+            draftText: `Dear Candidate,\n\nWe are delighted to extend an offer for the Lead Educator position at ${schoolName}, ${campus}, ${city}. We were inspired by your warmth and storytelling demo. Attached are the terms and pedagogy orientation schedule.\n\nWarmly,\n${acadName} (${acadTitle})`
           }
         }
       ],

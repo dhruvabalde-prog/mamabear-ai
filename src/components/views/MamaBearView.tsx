@@ -74,7 +74,13 @@ export const MamaBearView: React.FC<MamaBearViewProps> = ({
         })
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch (e) {
+        data = {};
+      }
       
       const aiReply: ChatMessage = {
         id: `mb-${Date.now()}`,
@@ -217,7 +223,7 @@ export const MamaBearView: React.FC<MamaBearViewProps> = ({
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Ask MamaBear (e.g. 'Draft WhatsApp to Dr. Radhika')..."
+              placeholder="Ask MamaBear AI (e.g. 'Draft parent inquiry reply')..."
               className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500 focus:bg-white"
             />
 

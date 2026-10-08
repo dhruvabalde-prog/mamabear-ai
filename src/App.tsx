@@ -110,13 +110,23 @@ export default function App() {
           fetch('/api/baileys/cards').catch(() => null)
         ]);
         if (statusRes && statusRes.ok) {
-          const sData = await statusRes.json();
-          setBaileysStatus(sData);
+          const rawText = await statusRes.text();
+          try {
+            const sData = JSON.parse(rawText);
+            setBaileysStatus(sData);
+          } catch (e) {
+            // non-JSON response fallback
+          }
         }
         if (cardsRes && cardsRes.ok) {
-          const cData = await cardsRes.json();
-          if (cData.story_cards && Array.isArray(cData.story_cards)) {
-            setStoryCards(cData.story_cards);
+          const rawText = await cardsRes.text();
+          try {
+            const cData = JSON.parse(rawText);
+            if (cData.story_cards && Array.isArray(cData.story_cards)) {
+              setStoryCards(cData.story_cards);
+            }
+          } catch (e) {
+            // non-JSON response fallback
           }
         }
       } catch (err) {
@@ -133,8 +143,11 @@ export default function App() {
     try {
       const res = await fetch('/api/baileys/connect', { method: 'POST' });
       if (res.ok) {
-        const data = await res.json();
-        setBaileysStatus(data);
+        const raw = await res.text();
+        try {
+          const data = JSON.parse(raw);
+          setBaileysStatus(data);
+        } catch (e) {}
       }
     } catch (err) {
       console.error('Failed to trigger Baileys connect', err);
@@ -145,8 +158,11 @@ export default function App() {
     try {
       const res = await fetch('/api/baileys/disconnect', { method: 'POST' });
       if (res.ok) {
-        const data = await res.json();
-        setBaileysStatus(data);
+        const raw = await res.text();
+        try {
+          const data = JSON.parse(raw);
+          setBaileysStatus(data);
+        } catch (e) {}
       }
     } catch (err) {
       console.error('Failed to trigger Baileys disconnect', err);

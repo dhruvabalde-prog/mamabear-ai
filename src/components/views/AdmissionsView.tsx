@@ -99,7 +99,13 @@ When would be a convenient time for you to visit this week?`;
           interestGrade: inquiry.grade
         })
       });
-      const data = await res.json();
+      let data: any = {};
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch (e) {
+        data = {};
+      }
       setGeneratedDraft(data.response || getWhatsAppMessage(inquiry));
     } catch (err) {
       setGeneratedDraft(getWhatsAppMessage(inquiry));
@@ -222,7 +228,9 @@ When would be a convenient time for you to visit this week?`;
           </div>
           <div className="p-3 bg-amber-50/60 rounded-2xl">
             <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">Fee Advance</span>
-            <span className="text-xl sm:text-2xl font-black text-amber-800 mt-0.5 block">₹1,40,000</span>
+            <span className="text-xl sm:text-2xl font-black text-amber-800 mt-0.5 block">
+              ₹{(inquiries.filter(i => i.status === 'Enrolled').length * 20000).toLocaleString('en-IN')}
+            </span>
             <span className="text-[10px] text-amber-700">Early-Bird Tier</span>
           </div>
         </div>
@@ -471,7 +479,7 @@ When would be a convenient time for you to visit this week?`;
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Dr. Alok Gupta or Er. Rajesh Meena"
+                  placeholder="Parent or Guardian name"
                   value={formData.parentName}
                   onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
                   className="w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500"

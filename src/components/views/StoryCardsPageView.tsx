@@ -23,26 +23,8 @@ export const StoryCardsPageView: React.FC<StoryCardsPageViewProps> = ({
   const [isListening, setIsListening] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 100 for current card
 
-  const activeCards = cards.length > 0 ? cards : [
-    {
-      card_id: 'card_demo_1',
-      chat_id: 'contact_1@s.whatsapp.net',
-      contact_name: 'Dr. Radhika',
-      category: 'UNANSWERED_PING' as const,
-      urgency: 'medium' as const,
-      headline: 'Unanswered inquiry on admissions',
-      context_summary: 'Parent asked about campus tour availability for next weekend 3 hours ago.',
-      ai_proposal: 'I can send a confirmation note offering Saturday 10:30 AM or Sunday 11 AM.\nKeeps enrollment velocity high without manual drafting.',
-      pre_drafted_action: {
-        action_type: 'SEND_WHATSAPP_REPLY' as const,
-        reply_text: 'Namaste Dr. Radhika! We would love to host you. Does Saturday 10:30 AM or Sunday 11 AM work for your visit?',
-        action_payload: {}
-      },
-      suggested_background_theme: 'amber' as const
-    }
-  ];
-
-  const currentCard = activeCards[currentIndex] || activeCards[0];
+  const activeCards = cards;
+  const currentCard = activeCards[currentIndex] || null;
 
   // Story progress timer (like Instagram / WhatsApp stories)
   useEffect(() => {
@@ -154,6 +136,44 @@ export const StoryCardsPageView: React.FC<StoryCardsPageViewProps> = ({
         return 'from-slate-900 via-neutral-900 to-black';
     }
   };
+
+  if (!currentCard || activeCards.length === 0) {
+    return (
+      <div className="fixed inset-0 z-50 bg-slate-950 text-white flex flex-col justify-between p-6 select-none animate-in fade-in">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-400" />
+            <span className="font-extrabold text-sm">Story Cards Engine</span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="text-center space-y-3 max-w-sm mx-auto">
+          <div className="w-14 h-14 rounded-3xl bg-white/10 flex items-center justify-center mx-auto text-2xl">
+            💬
+          </div>
+          <h2 className="text-lg font-black tracking-tight">No Pending Social Friction</h2>
+          <p className="text-xs text-white/70 leading-relaxed">
+            All WhatsApp pings and parent follow-ups are acknowledged. New Story Cards will synthesize automatically as messages stream in.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full py-3 rounded-2xl bg-white text-slate-950 font-bold text-xs cursor-pointer hover:bg-slate-100 transition-colors"
+        >
+          Close Stories
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div 

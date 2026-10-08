@@ -83,7 +83,13 @@ export const TaskLaunchModal: React.FC<TaskLaunchModalProps> = ({
         })
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch (e) {
+        data = {};
+      }
       
       const newPlan: TaskItem['executionPlan'] = {
         summary: data.summary || `Execution plan ready for ${task.title}`,
