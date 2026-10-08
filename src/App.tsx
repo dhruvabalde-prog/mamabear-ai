@@ -66,11 +66,19 @@ export default function App() {
     return DEFAULT_SETUP_CONFIG;
   });
 
-  // Core Data State with localStorage caching
+  // Core Data State with versioned localStorage caching (resets old dummy data automatically)
+  const DATA_VERSION = 'v2_zero_placeholder';
   const [tasks, setTasks] = useState<TaskItem[]>(() => {
     try {
-      const saved = localStorage.getItem('mb_tasks_data');
-      if (saved) return JSON.parse(saved);
+      const savedVersion = localStorage.getItem('mb_data_version');
+      if (savedVersion === DATA_VERSION) {
+        const saved = localStorage.getItem('mb_tasks_data');
+        if (saved) return JSON.parse(saved);
+      } else {
+        // Clear old stale cache containing dummy names or fake progress
+        localStorage.removeItem('mb_tasks_data');
+        localStorage.setItem('mb_data_version', DATA_VERSION);
+      }
     } catch (e) {
       console.warn('Failed to load cached tasks', e);
     }
