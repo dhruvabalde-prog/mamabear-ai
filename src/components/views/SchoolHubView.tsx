@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
 import { 
-  Building2, Users, GraduationCap, Baby, IndianRupee, 
-  MapPin, ShieldCheck, Settings, ArrowLeft, ArrowRight,
-  Sparkles, CheckCircle2, ChevronRight
+  Users, Building2, GraduationCap, IndianRupee, ShieldCheck, 
+  MapPin, ChevronRight, ArrowLeft
 } from 'lucide-react';
-import { User } from 'firebase/auth';
-import { 
-  ActiveFounderRole, ParentInquiry, FacilityZone, SetupConfig,
-  StaffMember, ExpenseItem, AcademicProgram, LocalVendor, QualityReview, DailyHandoff 
-} from '../../types';
+import { ParentInquiry, FacilityZone, SetupConfig, StaffMember, ExpenseItem, AcademicProgram, LocalVendor } from '../../types';
 import { AdmissionsView } from './AdmissionsView';
 import { FacilityView } from './FacilityView';
 import { AcademicsView } from './AcademicsView';
-import { ToddlerLabView } from './ToddlerLabView';
 import { FinanceView } from './FinanceView';
 import { StaffView } from './StaffView';
 import { KotaHubView } from './KotaHubView';
-import { GoogleSettingsView } from './GoogleSettingsView';
 
 interface SchoolHubViewProps {
-  activeFounder: ActiveFounderRole;
   initialSubSection?: string;
   inquiries?: ParentInquiry[];
   onAddInquiry?: (inquiry: ParentInquiry) => void;
@@ -36,22 +28,18 @@ interface SchoolHubViewProps {
   onSaveAcademicProgram?: (program: AcademicProgram) => void;
   vendors?: LocalVendor[];
   onAddVendor?: (vendor: LocalVendor) => void;
-  reviews?: QualityReview[];
-  onAddReview?: (review: QualityReview) => void;
-  handoff?: DailyHandoff | null;
-  onUpdateHandoff?: (handoff: DailyHandoff) => void;
-  googleUser?: User | null;
-  hasGoogleToken?: boolean;
-  onAuthSuccess?: (user: User, token: string | null) => void;
-  onAuthLogout?: () => void;
-  baileysStatus?: BaileysConnectionStatus;
-  onConnectBaileys?: () => void;
-  onDisconnectBaileys?: () => void;
-  onOpenConnectedApps?: () => void;
+}
+
+interface DeptItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: any;
+  color: string;
+  badge: string;
 }
 
 export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
-  activeFounder,
   initialSubSection,
   inquiries = [],
   onAddInquiry = () => {},
@@ -67,128 +55,84 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
   academicPrograms = [],
   onSaveAcademicProgram = () => {},
   vendors = [],
-  onAddVendor = () => {},
-  reviews = [],
-  onAddReview = () => {},
-  handoff = null,
-  onUpdateHandoff = () => {},
-  googleUser = null,
-  hasGoogleToken = false,
-  onAuthSuccess = () => {},
-  onAuthLogout = () => {},
-  baileysStatus = { status: 'disconnected' },
-  onConnectBaileys = () => {},
-  onDisconnectBaileys = () => {},
-  onOpenConnectedApps
+  onAddVendor = () => {}
 }) => {
   const [selectedSection, setSelectedSection] = useState<string | null>(initialSubSection || null);
 
-  const sections = [
+  // Clean departments without Toddler Lab or Google OAuth (moved to left drawer/accounts)
+  const departments: DeptItem[] = [
     {
       id: 'admissions',
-      title: 'Admissions & Parent CRM',
-      subtitle: 'Allen/Resonance/Motion coaching faculties & doctors in Kota',
+      title: 'Admissions',
+      subtitle: `${inquiries.length} parent inquiries registered`,
       icon: Users,
       color: 'bg-emerald-500',
-      tag: `${inquiries.length} Inquiries`,
-      accent: 'border-emerald-200 hover:border-emerald-400',
-      badge: 'Active pipeline'
+      badge: `${inquiries.length}`
     },
     {
       id: 'facility',
-      title: 'Facility & Subhash Nagar Site',
-      subtitle: 'Renovation, Kota stone non-slip flooring & CCTV childproofing',
+      title: 'Facility',
+      subtitle: 'Campus civil and safety zones',
       icon: Building2,
       color: 'bg-amber-500',
-      tag: '68% Complete',
-      accent: 'border-amber-200 hover:border-amber-400',
-      badge: 'Launch priority'
+      badge: 'Site'
     },
     {
       id: 'academics',
-      title: 'Canadian Curriculum',
-      subtitle: 'Maple Bear early childhood immersion, Toddler & Nursery units',
+      title: 'Curriculum',
+      subtitle: 'Early childhood learning frameworks',
       icon: GraduationCap,
-      color: 'bg-red-500',
-      tag: 'Academics',
-      accent: 'border-red-200 hover:border-red-400',
-      badge: 'Bilingual ECE'
-    },
-    {
-      id: 'toddlers',
-      title: 'Mom-Founder Toddler Lab',
-      subtitle: 'Early childhood play-testing, nap-time sync & toddler wellbeing',
-      icon: Baby,
-      color: 'bg-purple-500',
-      tag: 'Toddler Lab',
-      accent: 'border-purple-200 hover:border-purple-400',
-      badge: '3-Year-Olds'
+      color: 'bg-rose-500',
+      badge: 'ECE'
     },
     {
       id: 'finances',
-      title: 'Capex, Fee Matrix & P&L',
-      subtitle: '₹15L signing amount verified today, Kota fee slab & break-even',
+      title: 'Finances',
+      subtitle: `${expenses.length} expenses logged`,
       icon: IndianRupee,
       color: 'bg-blue-500',
-      tag: '₹15L Paid',
-      accent: 'border-blue-200 hover:border-blue-400',
-      badge: 'Operations'
+      badge: 'Budget'
     },
     {
       id: 'staff',
-      title: 'Staff Roster & Verification',
-      subtitle: '12-member team, Canadian Pedagogy Cert & Police verification',
+      title: 'Staff',
+      subtitle: `${staff.length} team members onboarded`,
       icon: ShieldCheck,
       color: 'bg-teal-500',
-      tag: '7/12 Onboarded',
-      accent: 'border-teal-200 hover:border-teal-400',
-      badge: 'HR & Safety'
+      badge: `${staff.length}`
     },
     {
       id: 'kota',
-      title: 'Kota Local Intelligence',
-      subtitle: 'Subhash Nagar vendors, 46°C heat protocols & hospital tie-ups',
+      title: 'Vendors',
+      subtitle: `${vendors.length} local suppliers & contracts`,
       icon: MapPin,
       color: 'bg-orange-500',
-      tag: 'Subhash Nagar',
-      accent: 'border-orange-200 hover:border-orange-400',
-      badge: 'Hyper-Local'
-    },
-    {
-      id: 'google',
-      title: 'Google Workspace Settings',
-      subtitle: 'Connected Calendar, Tasks, Gmail, Drive & progressive permissions',
-      icon: Settings,
-      color: 'bg-indigo-500',
-      tag: hasGoogleToken ? 'Connected' : 'Action needed',
-      accent: 'border-indigo-200 hover:border-indigo-400',
-      badge: 'Cloud Sync'
-    },
+      badge: 'Local'
+    }
   ];
 
   if (selectedSection) {
+    const activeDept = departments.find(d => d.id === selectedSection);
     return (
-      <div className="min-h-[85vh] pb-24">
-        {/* Breadcrumb Header */}
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-20 px-3 sm:px-4 py-2.5 shadow-xs">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
+        {/* Department Page Header: Back arrow + 1-2 words Title */}
+        <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-2xs">
+          <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={() => setSelectedSection(null)}
-              className="p-2 rounded-xl text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer flex items-center justify-center"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
               title="Back"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-gray-800 bg-gray-100 px-2.5 py-1 rounded-xl">
-                {sections.find(s => s.id === selectedSection)?.title.split(' ')[0]}
-              </span>
-            </div>
+            <h1 className="text-lg font-black tracking-tight text-slate-900">
+              {activeDept?.title || 'Department'}
+            </h1>
           </div>
-        </div>
+        </header>
 
-        {/* Full-Page Content for Selected Department */}
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 py-6">
+        <main className="max-w-3xl mx-auto p-4">
           {selectedSection === 'admissions' && (
             <AdmissionsView
               inquiries={inquiries}
@@ -206,15 +150,6 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
             <AcademicsView
               programs={academicPrograms}
               onSaveProgram={onSaveAcademicProgram}
-            />
-          )}
-          {selectedSection === 'toddlers' && (
-            <ToddlerLabView
-              reviews={reviews}
-              handoff={handoff}
-              setupConfig={setupConfig}
-              onAddReview={onAddReview}
-              onUpdateHandoff={onUpdateHandoff}
             />
           )}
           {selectedSection === 'finances' && (
@@ -238,107 +173,50 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
               onAddVendor={onAddVendor}
             />
           )}
-          {selectedSection === 'google' && (
-            <GoogleSettingsView 
-              user={googleUser} 
-              hasToken={hasGoogleToken} 
-              onAuthSuccess={onAuthSuccess} 
-              onAuthLogout={onAuthLogout} 
-              onClose={() => setSelectedSection(null)}
-              baileysStatus={baileysStatus}
-              onConnectBaileys={onConnectBaileys}
-              onDisconnectBaileys={onDisconnectBaileys}
-              onOpenConnectedApps={onOpenConnectedApps}
-            />
-          )}
-        </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-2 sm:px-4 py-3 sm:py-6 pb-28">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 rounded-3xl p-4 sm:p-6 text-white shadow-md mb-4 sm:mb-6 relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl sm:text-3xl font-black tracking-tight">
-                School
-              </h1>
-              <p className="text-red-100 text-xs mt-0.5">
-                Subhash Nagar franchise workspace
-              </p>
-            </div>
-            <div className="bg-white/20 backdrop-blur-xs px-2.5 py-1 rounded-xl text-[11px] font-bold">
-              ₹15L Paid • 60 Days
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Grid of Department Portals */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {sections.map(section => {
-          const Icon = section.icon;
+    <div className="max-w-md mx-auto space-y-2 pb-24 px-3 pt-2">
+      {/* WhatsApp chat-style long vertical tiles */}
+      <div className="divide-y divide-slate-100 bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
+        {departments.map((dept) => {
+          const Icon = dept.icon;
           return (
-            <div
-              key={section.id}
-              onClick={() => setSelectedSection(section.id)}
-              className={`bg-white rounded-2xl p-4 sm:p-5 border-2 border-gray-100 ${section.accent} shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between group text-left`}
+            <button
+              key={dept.id}
+              type="button"
+              onClick={() => setSelectedSection(dept.id)}
+              className="w-full p-3.5 flex items-center justify-between text-left hover:bg-slate-50 active:bg-slate-100 transition-colors cursor-pointer"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3.5">
-                  <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl ${section.color} text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform`}>
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">
-                    {section.badge}
-                  </span>
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={`w-11 h-11 rounded-2xl ${dept.color} text-white flex items-center justify-center shrink-0 shadow-2xs`}>
+                  <Icon className="w-5 h-5" />
                 </div>
-
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-red-700 transition-colors mb-1">
-                  {section.title}
-                </h3>
-                <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3.5">
-                  {section.subtitle}
-                </p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-sm text-slate-900 truncate">
+                      {dept.title}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 truncate mt-0.5">
+                    {dept.subtitle}
+                  </p>
+                </div>
               </div>
 
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-                <span className="font-semibold text-gray-600 bg-gray-50 px-2 py-1 rounded-md">
-                  {section.tag}
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  {dept.badge}
                 </span>
-                <span className="text-red-600 font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                  <span>Open Dept</span>
-                  <ChevronRight className="w-4 h-4" />
-                </span>
+                <ChevronRight className="w-4 h-4 text-slate-300" />
               </div>
-            </div>
+            </button>
           );
         })}
-      </div>
-
-      {/* Mom Nuance Quick Status Footer Card */}
-      <div className="mt-6 sm:mt-8 bg-purple-50 border border-purple-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0">
-            <Baby className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-purple-950">Mom-Founders Dual Balance</h4>
-            <p className="text-xs text-purple-700">Toddler playgroup and nap routines are scheduled for 1:30 PM</p>
-          </div>
-        </div>
-        <button
-          onClick={() => setSelectedSection('toddlers')}
-          className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shrink-0"
-        >
-          Check Toddler Lab
-        </button>
       </div>
     </div>
   );
 };
-
-export default SchoolHubView;

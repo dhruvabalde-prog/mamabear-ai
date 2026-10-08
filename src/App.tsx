@@ -28,6 +28,7 @@ import {
 import { Navbar } from './components/Navbar';
 import { LockedFooter } from './components/LockedFooter';
 import { SetupWizard } from './components/SetupWizard';
+import { AppDrawer, ChatSessionSummary } from './components/AppDrawer';
 
 import { DashboardView } from './components/views/DashboardView';
 import { TaskBoardView } from './components/views/TaskBoardView';
@@ -36,6 +37,7 @@ import { MamaBearView } from './components/views/MamaBearView';
 import { CommsHubView } from './components/views/CommsHubView';
 import { SchoolHubView } from './components/views/SchoolHubView';
 import { GoogleSettingsView } from './components/views/GoogleSettingsView';
+import { WhatsAppPairingPageView } from './components/views/WhatsAppPairingPageView';
 import { StoryCardsPageView } from './components/views/StoryCardsPageView';
 import { ConnectedAppsView } from './components/views/ConnectedAppsView';
 import { AdminPanelModal } from './components/AdminPanelModal';
@@ -47,11 +49,25 @@ export default function App() {
   // Full-page task viewing (No dialog boxes - full pager!)
   const [viewingTask, setViewingTask] = useState<TaskItem | null>(null);
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
+  const [showWhatsAppPairing, setShowWhatsAppPairing] = useState<boolean>(false);
   const [showConnectedApps, setShowConnectedApps] = useState<boolean>(false);
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
   const [showStoryCardsPage, setShowStoryCardsPage] = useState<boolean>(false);
   const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
+  const [showDrawer, setShowDrawer] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
+
+  // Chat sessions list for left drawer
+  const [chatSessions, setChatSessions] = useState<ChatSessionSummary[]>(() => {
+    try {
+      const saved = localStorage.getItem('mb_chat_sessions');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [
+      { id: 'default', title: 'Main Operations Chat', timestamp: 'Today', lastMessage: 'MamaBear AI ready' }
+    ];
+  });
+  const [activeChatId, setActiveChatId] = useState<string>('default');
 
   // Baileys WhatsApp & Executive Operations Story Cards State
   const [baileysStatus, setBaileysStatus] = useState<BaileysConnectionStatus>({ status: 'disconnected' });
@@ -68,8 +84,8 @@ export default function App() {
     return DEFAULT_SETUP_CONFIG;
   });
 
-  // Core Data State with versioned localStorage caching (resets old dummy data automatically)
-  const DATA_VERSION = 'v2_zero_placeholder';
+  // Core Data State
+  const DATA_VERSION = 'v3_zero_clean';
   const [tasks, setTasks] = useState<TaskItem[]>(() => {
     try {
       const savedVersion = localStorage.getItem('mb_data_version');
@@ -77,7 +93,6 @@ export default function App() {
         const saved = localStorage.getItem('mb_tasks_data');
         if (saved) return JSON.parse(saved);
       } else {
-        // Clear old stale cache containing dummy names or fake progress
         localStorage.removeItem('mb_tasks_data');
         localStorage.setItem('mb_data_version', DATA_VERSION);
       }
@@ -92,10 +107,10 @@ export default function App() {
   const [facilityZones, setFacilityZones] = useState<FacilityZone[]>(INITIAL_FACILITY_ZONES);
   const [staff, setStaff] = useState<StaffMember[]>(INITIAL_STAFF);
   const [expenses, setExpenses] = useState<ExpenseItem[]>(INITIAL_EXPENSES);
-  const [academicPrograms, setAcademicPrograms] = useState<AcademicProgram[]>([]);
-  const [vendors, setVendors] = useState<LocalVendor[]>([]);
-  const [reviews, setReviews] = useState<QualityReview[]>([]);
-  const [handoff, setHandoff] = useState<DailyHandoff | null>(null);
+  const [academicPrograms, setAcademicPrograms] = useState([]);
+  const [vendors, setVendors] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [handoff, setHandoff] = useState(null);
 
   // Google Workspace Auth State
   const [googleUser, setGoogleUser] = useState<User | null>(null);
@@ -114,9 +129,7 @@ export default function App() {
           try {
             const sData = JSON.parse(rawText);
             setBaileysStatus(sData);
-          } catch (e) {
-            // non-JSON response fallback
-          }
+          } catch (e) {}
         }
         if (cardsRes && cardsRes.ok) {
           const rawText = await cardsRes.text();
@@ -125,13 +138,9 @@ export default function App() {
             if (cData.story_cards && Array.isArray(cData.story_cards)) {
               setStoryCards(cData.story_cards);
             }
-          } catch (e) {
-            // non-JSON response fallback
-          }
+          } catch (e) {}
         }
-      } catch (err) {
-        // silent fallback
-      }
+      } catch (err) {}
     };
 
     fetchBaileys();
@@ -211,16 +220,6 @@ export default function App() {
         if (data.nudges && data.nudges.length > 0) setNudges(data.nudges);
         if (data.staff) setStaff(data.staff);
         if (data.expenses) setExpenses(data.expenses);
-        if (data.academicPrograms) setAcademicPrograms(data.academicPrograms);
-        if (data.vendors) setVendors(data.vendors);
-        if (data.reviews) setReviews(data.reviews);
-        if (data.handoff) setHandoff(data.handoff);
-        if (data.setupConfig) {
-          setSetupConfig(data.setupConfig);
-          try {
-            localStorage.setItem('mb_setup_config', JSON.stringify(data.setupConfig));
-          } catch (e) {}
-        }
         setIsSupabaseConnected(true);
       }
     });
@@ -245,10 +244,17 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem('mb_tasks_data', JSON.stringify(tasks));
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
   }, [tasks]);
+
+  const handleSaveSetup = (newConfig: SetupConfig) => {
+    setSetupConfig(newConfig);
+    try {
+      localStorage.setItem('mb_setup_config', JSON.stringify(newConfig));
+    } catch (e) {}
+    syncSetupToSupabase(newConfig);
+    setShowSetupModal(false);
+  };
 
   const handleOpenTaskDetail = (task: TaskItem) => {
     setViewingTask(task);
@@ -261,26 +267,18 @@ export default function App() {
 
   const handleUpdateTask = (updatedTask: TaskItem) => {
     setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
-    if (viewingTask && viewingTask.id === updatedTask.id) {
+    if (viewingTask?.id === updatedTask.id) {
       setViewingTask(updatedTask);
     }
     syncTaskToSupabase(updatedTask);
   };
 
   const handleToggleTaskStatus = (taskId: string) => {
-    setTasks(prev => prev.map(t => {
-      if (t.id === taskId) {
-        const updated = { ...t, status: (t.status === 'completed' ? 'pending' : 'completed') as TaskItem['status'] };
-        syncTaskToSupabase(updated);
-        return updated;
-      }
-      return t;
-    }));
-  };
-
-  const handleSendNudge = (nudge: VoiceNudge) => {
-    setNudges(prev => [nudge, ...prev]);
-    syncNudgeToSupabase(nudge);
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const nextStatus = task.status === 'completed' ? 'pending' : 'completed';
+    const updated = { ...task, status: nextStatus };
+    handleUpdateTask(updated);
   };
 
   const handleAddInquiry = (inquiry: ParentInquiry) => {
@@ -289,118 +287,91 @@ export default function App() {
   };
 
   const handleUpdateInquiryStatus = (id: string, status: ParentInquiry['status']) => {
-    setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
+    setInquiries(prev => prev.map(inq => inq.id === id ? { ...inq, status } : inq));
     syncInquiryStatusToSupabase(id, status);
   };
 
   const handleUpdateZoneProgress = (id: string, progress: number) => {
-    setFacilityZones(prev => prev.map(z => {
-      if (z.id === id) {
-        const status = progress === 100 ? 'Ready for Kids' : progress >= 75 ? 'Furnished' : z.status;
-        syncZoneProgressToSupabase(id, progress, status);
-        return { ...z, progress, status };
-      }
-      return z;
-    }));
+    setFacilityZones(prev => prev.map(z => z.id === id ? { ...z, progress } : z));
+    syncZoneProgressToSupabase(id, progress);
   };
 
-  const handleSaveSetup = (newConfig: SetupConfig) => {
-    setSetupConfig(newConfig);
-    setShowSetupModal(false);
+  const handleSendNudge = (nudge: VoiceNudge) => {
+    setNudges(prev => [nudge, ...prev]);
+    syncNudgeToSupabase(nudge);
+  };
+
+  const handleNewChat = () => {
+    const newId = `chat_${Date.now()}`;
+    const newSession: ChatSessionSummary = {
+      id: newId,
+      title: `Chat ${chatSessions.length + 1}`,
+      timestamp: 'Just now',
+      lastMessage: 'Started new chat'
+    };
+    const updated = [newSession, ...chatSessions];
+    setChatSessions(updated);
+    setActiveChatId(newId);
     try {
-      localStorage.setItem('mb_setup_config', JSON.stringify(newConfig));
+      localStorage.setItem('mb_chat_sessions', JSON.stringify(updated));
     } catch (e) {}
-    syncSetupToSupabase(newConfig);
+    setCurrentTab('mamabear');
   };
 
-  const handleAddStaff = (member: StaffMember) => {
-    setStaff(prev => [member, ...prev]);
-    syncStaffToSupabase(member);
-  };
-
-  const handleUpdateStaffVerification = (id: string, policeVerified?: boolean, firstAidCertified?: boolean) => {
-    setStaff(prev => prev.map(m => m.id === id ? {
-      ...m,
-      policeVerified: policeVerified !== undefined ? policeVerified : m.policeVerified,
-      firstAidCertified: firstAidCertified !== undefined ? firstAidCertified : m.firstAidCertified
-    } : m));
-    syncStaffVerificationToSupabase(id, policeVerified, firstAidCertified);
-  };
-
-  const handleAddExpense = (expense: ExpenseItem) => {
-    setExpenses(prev => [expense, ...prev]);
-    syncExpenseToSupabase(expense);
-  };
-
-  const handleSaveAcademicProgram = (program: AcademicProgram) => {
-    setAcademicPrograms(prev => {
-      const exists = prev.some(p => p.slug === program.slug);
-      return exists ? prev.map(p => p.slug === program.slug ? program : p) : [...prev, program];
+  const handleUpdateChatHistory = (id: string, text: string) => {
+    setChatSessions(prev => {
+      const updated = prev.map(s => s.id === id ? { ...s, lastMessage: text, timestamp: 'Just now' } : s);
+      try {
+        localStorage.setItem('mb_chat_sessions', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
     });
-    syncCurriculumToSupabase(program);
   };
 
-  const handleAddVendor = (vendor: LocalVendor) => {
-    setVendors(prev => [vendor, ...prev]);
-    syncVendorToSupabase(vendor);
-  };
-
-  const handleAddReview = (review: QualityReview) => {
-    setReviews(prev => [review, ...prev]);
-    syncReviewToSupabase(review);
-  };
-
-  const handleUpdateHandoff = (newHandoff: DailyHandoff) => {
-    setHandoff(newHandoff);
-    syncHandoffToSupabase(newHandoff);
-  };
+  // Determine current page title (1-2 words)
+  const isSpecialPage = showGooglePortal || showWhatsAppPairing || showConnectedApps || viewingTask;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col antialiased selection:bg-rose-100 selection:text-rose-900 font-sans pb-24">
+    <div className="min-h-screen bg-slate-50 flex flex-col antialiased selection:bg-rose-100 selection:text-rose-900 font-sans pb-20">
       
-      {/* Streamlined Top Navbar */}
-      <Navbar
-        currentTab={currentTab}
-        onSelectTab={(tab) => {
-          setViewingTask(null);
-          setShowGooglePortal(false);
-          setShowSetupModal(false);
-          setShowStoryCardsPage(false);
-          setCurrentTab(tab);
+      {/* Top Navbar: Heading locked in header, configure button removed, logo opens left drawer */}
+      {!isSpecialPage && (
+        <Navbar
+          currentTab={currentTab}
+          onOpenDrawer={() => setShowDrawer(true)}
+          googleUser={googleUser}
+          hasGoogleToken={hasGoogleToken}
+          onOpenGoogleSettings={() => {
+            setViewingTask(null);
+            setShowWhatsAppPairing(false);
+            setShowGooglePortal(true);
+          }}
+          onOpenStoryCards={() => {
+            setViewingTask(null);
+            setShowStoryCardsPage(true);
+          }}
+        />
+      )}
+
+      {/* Left Drawer */}
+      <AppDrawer
+        isOpen={showDrawer}
+        onClose={() => setShowDrawer(false)}
+        onNewChat={handleNewChat}
+        onOpenScheduled={() => setCurrentTab('tasks')}
+        onOpenLibrary={() => setCurrentTab('tasks')}
+        onOpenConnectedApps={() => {
+          setShowConnectedApps(true);
         }}
-        googleUser={googleUser}
-        hasGoogleToken={hasGoogleToken}
-        isSupabaseConnected={isSupabaseConnected}
-        setupConfig={setupConfig}
-        onOpenGoogleSettings={() => {
-          setViewingTask(null);
-          setShowSetupModal(false);
-          setShowStoryCardsPage(false);
-          setShowGooglePortal(true);
-        }}
-        onOpenSetup={() => {
-          setViewingTask(null);
-          setShowGooglePortal(false);
-          setShowStoryCardsPage(false);
-          setShowSetupModal(true);
-        }}
-        onOpenStoryCards={() => {
-          setViewingTask(null);
-          setShowGooglePortal(false);
-          setShowSetupModal(false);
-          setShowStoryCardsPage(true);
-        }}
-        onAuthSuccess={(user, token) => {
-          setGoogleUser(user);
-          setHasGoogleToken(!!token);
-        }}
-        onAuthLogout={() => {
-          setGoogleUser(null);
-          setHasGoogleToken(false);
+        chatSessions={chatSessions}
+        activeChatId={activeChatId}
+        onSelectChat={(id) => {
+          setActiveChatId(id);
+          setCurrentTab('mamabear');
         }}
       />
 
-      {/* Unique Executive Story Cards Screen */}
+      {/* Executive Story Cards Screen */}
       {showStoryCardsPage && (
         <StoryCardsPageView
           cards={storyCards}
@@ -411,15 +382,8 @@ export default function App() {
       )}
 
       {/* Main View Area */}
-      <main className="flex-1 w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-6">
-        {/* Dedicated Setup & School Rules Wizard */}
-        {showSetupModal ? (
-          <SetupWizard
-            initialConfig={setupConfig}
-            onSaveConfig={handleSaveSetup}
-            onCancel={() => setShowSetupModal(false)}
-          />
-        ) : showConnectedApps ? (
+      <main className="flex-1 w-full mx-auto">
+        {showConnectedApps ? (
           <ConnectedAppsView
             onBack={() => setShowConnectedApps(false)}
             user={googleUser}
@@ -432,6 +396,13 @@ export default function App() {
               setGoogleUser(null);
               setHasGoogleToken(false);
             }}
+          />
+        ) : showWhatsAppPairing ? (
+          <WhatsAppPairingPageView
+            onBack={() => setShowWhatsAppPairing(false)}
+            status={baileysStatus}
+            onConnect={handleConnectBaileys}
+            onDisconnect={handleDisconnectBaileys}
           />
         ) : showGooglePortal ? (
           <GoogleSettingsView
@@ -447,11 +418,13 @@ export default function App() {
             }}
             onClose={() => setShowGooglePortal(false)}
             baileysStatus={baileysStatus}
-            onConnectBaileys={handleConnectBaileys}
-            onDisconnectBaileys={handleDisconnectBaileys}
-            onOpenConnectedApps={() => {
+            onOpenWhatsAppPairing={() => {
               setShowGooglePortal(false);
-              setShowConnectedApps(true);
+              setShowWhatsAppPairing(true);
+            }}
+            onOpenAdmin={() => {
+              setShowGooglePortal(false);
+              setShowAdminModal(true);
             }}
           />
         ) : viewingTask ? (
@@ -462,31 +435,25 @@ export default function App() {
             userEmail={googleUser?.email}
           />
         ) : (
-          <>
-            {/* 1. Launch Hub (Home / Dashboard) */}
+          <div className="px-3 sm:px-6 pt-3 sm:pt-4">
+            {/* 1. Launch Hub (Home) */}
             {currentTab === 'dashboard' && (
               <DashboardView
                 tasks={tasks}
                 setupConfig={setupConfig}
                 storyCards={storyCards}
                 baileysStatus={baileysStatus}
-                onConnectBaileys={handleConnectBaileys}
+                onConnectBaileys={() => setShowWhatsAppPairing(true)}
                 onDisconnectBaileys={handleDisconnectBaileys}
                 onApproveStoryCard={handleApproveStoryCard}
                 onDismissStoryCard={handleDismissStoryCard}
                 onOpenTaskModal={handleOpenTaskDetail}
                 onToggleTask={handleToggleTaskStatus}
-                onNavigateTab={(tab) => {
-                  if (['admissions', 'facility', 'academics', 'toddlerlab', 'finance', 'staff', 'kotahub', 'settings'].includes(tab)) {
-                    setCurrentTab('school');
-                  } else {
-                    setCurrentTab(tab);
-                  }
-                }}
+                onNavigateTab={(tab) => setCurrentTab(tab)}
               />
             )}
 
-            {/* 2. Master Tasks Library (All 400 Tasks Shared & Reassignable) */}
+            {/* 2. Master Tasks */}
             {currentTab === 'tasks' && (
               <TaskBoardView
                 tasks={tasks}
@@ -495,33 +462,29 @@ export default function App() {
               />
             )}
 
-            {/* 3. MamaBear AI 🐻 Center Tab */}
+            {/* 3. MamaBear AI */}
             {currentTab === 'mamabear' && (
               <MamaBearView
-                activeFounder="academics"
+                activeChatId={activeChatId}
+                onUpdateChatHistory={handleUpdateChatHistory}
                 onNavigateToTasks={() => setCurrentTab('tasks')}
               />
             )}
 
-            {/* 4. Chats Tab (Google Chat, Gmail, WhatsApp) */}
+            {/* 4. Chats Tab */}
             {currentTab === 'comms' && (
               <CommsHubView
                 nudges={nudges}
                 onSendNudge={handleSendNudge}
                 inquiries={inquiries}
-                staff={staff}
                 vendors={vendors}
                 setupConfig={setupConfig}
-                baileysStatus={baileysStatus}
-                onConnectBaileys={handleConnectBaileys}
-                onDisconnectBaileys={handleDisconnectBaileys}
               />
             )}
 
-            {/* 5. School Operations Hub (Admissions, Facility, Academics, Toddlers, Capex/Finances, Staff, Kota Hub, Google) */}
+            {/* 5. School Operations Hub */}
             {currentTab === 'school' && (
               <SchoolHubView
-                activeFounder="academics"
                 inquiries={inquiries}
                 onAddInquiry={handleAddInquiry}
                 onUpdateInquiryStatus={handleUpdateInquiryStatus}
@@ -529,52 +492,30 @@ export default function App() {
                 onUpdateZoneProgress={handleUpdateZoneProgress}
                 setupConfig={setupConfig}
                 staff={staff}
-                onAddStaff={handleAddStaff}
-                onUpdateStaffVerification={handleUpdateStaffVerification}
                 expenses={expenses}
-                onAddExpense={handleAddExpense}
-                academicPrograms={academicPrograms}
-                onSaveAcademicProgram={handleSaveAcademicProgram}
-                vendors={vendors}
-                onAddVendor={handleAddVendor}
-                reviews={reviews}
-                onAddReview={handleAddReview}
-                handoff={handoff}
-                onUpdateHandoff={handleUpdateHandoff}
-                googleUser={googleUser}
-                hasGoogleToken={hasGoogleToken}
-                onAuthSuccess={(u, t) => {
-                  setGoogleUser(u);
-                  setHasGoogleToken(!!t);
-                }}
-                onAuthLogout={() => {
-                  setGoogleUser(null);
-                  setHasGoogleToken(false);
-                }}
-                baileysStatus={baileysStatus}
-                onConnectBaileys={handleConnectBaileys}
-                onDisconnectBaileys={handleDisconnectBaileys}
-                onOpenConnectedApps={() => {
-                  setShowConnectedApps(true);
-                }}
               />
             )}
-          </>
+          </div>
         )}
       </main>
 
-      {/* Locked Bottom Footer Navigation (5 Tabs: Home, Tasks, MamaBear AI, Chats, School) */}
-      <LockedFooter
-        currentTab={viewingTask ? 'tasks' : currentTab}
-        onSelectTab={(tab) => {
-          setViewingTask(null);
-          setCurrentTab(tab);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        totalTaskCount={tasks.length}
-        unreadCommsCount={nudges.length > 0 ? nudges.length : 3}
-        onOpenAdmin={() => setShowAdminModal(true)}
-      />
+      {/* Locked Bottom Footer Navigation (Hidden on detail / special pages) */}
+      {!isSpecialPage && (
+        <LockedFooter
+          currentTab={currentTab}
+          onSelectTab={(tab) => {
+            setViewingTask(null);
+            setShowGooglePortal(false);
+            setShowWhatsAppPairing(false);
+            setShowConnectedApps(false);
+            setCurrentTab(tab);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          totalTaskCount={tasks.length}
+          unreadCommsCount={nudges.length > 0 ? nudges.length : 0}
+          onOpenAdmin={() => setShowAdminModal(true)}
+        />
+      )}
 
       {/* Global Secure Admin Console Modal */}
       <AdminPanelModal

@@ -1,67 +1,60 @@
 import React from 'react';
 import { 
-  MapPin, Mail, Settings, User as UserIcon, LogOut, Sliders, Sparkles
+  Sparkles, Menu
 } from 'lucide-react';
 import { User } from 'firebase/auth';
-import { SetupConfig } from '../types';
 
 interface NavbarProps {
   currentTab: string;
-  onSelectTab: (tab: string) => void;
+  pageTitle?: string;
+  onOpenDrawer: () => void;
   googleUser: User | null;
   hasGoogleToken: boolean;
-  isSupabaseConnected?: boolean;
-  setupConfig?: SetupConfig | null;
   onOpenGoogleSettings: () => void;
-  onOpenSetup?: () => void;
   onOpenStoryCards?: () => void;
-  onAuthSuccess: (user: User, token: string | null) => void;
-  onAuthLogout: () => void;
 }
+
+const TAB_TITLES: Record<string, string> = {
+  dashboard: 'Home',
+  tasks: 'Tasks',
+  mamabear: 'MamaBear',
+  comms: 'Chats',
+  school: 'School'
+};
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentTab,
-  onSelectTab,
+  pageTitle,
+  onOpenDrawer,
   googleUser,
   hasGoogleToken,
-  isSupabaseConnected,
-  setupConfig,
   onOpenGoogleSettings,
-  onOpenSetup,
-  onOpenStoryCards,
-  onAuthSuccess,
-  onAuthLogout
+  onOpenStoryCards
 }) => {
-  const schoolTitle = setupConfig?.schoolName || 'Maple Bear Canadian School';
-  const campusSub = setupConfig?.campusLocation 
-    ? `${setupConfig.campusLocation}${setupConfig.city ? ', ' + setupConfig.city : ''}`
-    : 'Campus Operations';
+  const displayTitle = pageTitle || TAB_TITLES[currentTab] || 'Home';
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
       <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
         
-        {/* Brand & Campus */}
-        <button 
-          type="button"
-          onClick={() => onSelectTab('dashboard')}
-          className="flex items-center gap-2.5 text-left cursor-pointer group shrink-0"
-        >
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-rose-600 via-red-500 to-amber-500 flex items-center justify-center text-white shadow-xs font-black text-base shrink-0">
+        {/* Left: Maple Bear logo triggers Drawer menu */}
+        <div className="flex items-center gap-2.5">
+          <button 
+            type="button"
+            onClick={onOpenDrawer}
+            className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-rose-600 via-red-500 to-amber-500 flex items-center justify-center text-white shadow-xs font-black text-base cursor-pointer hover:opacity-90 active:scale-95 transition-all shrink-0"
+            title="Open Menu"
+          >
             🍁
-          </div>
-          <div>
-            <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 group-hover:text-rose-600 transition-colors block leading-tight">
-              {schoolTitle}
-            </span>
-            <p className="text-[11px] text-slate-500 flex items-center gap-1 font-medium">
-              <MapPin className="w-3 h-3 text-red-500 shrink-0" />
-              <span>{campusSub}</span>
-            </p>
-          </div>
-        </button>
+          </button>
 
-        {/* Right Side: Stories, Setup & Auth Status */}
+          {/* Heading of current page: 1-2 words only */}
+          <h1 className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 leading-tight">
+            {displayTitle}
+          </h1>
+        </div>
+
+        {/* Right Side: Stories & Account Status (Configure button removed) */}
         <div className="flex items-center gap-1.5">
           
           {/* Executive Story Cards Symbol Button */}
@@ -70,22 +63,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               type="button"
               onClick={onOpenStoryCards}
               className="p-2 rounded-2xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 transition-all flex items-center cursor-pointer shadow-2xs relative"
-              title="Stories"
+              title="Story Cards"
             >
               <Sparkles className="w-4 h-4 text-rose-600" />
               <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-1 right-1 animate-pulse" />
-            </button>
-          )}
-
-          {/* Setup / Configuration Button */}
-          {onOpenSetup && (
-            <button
-              type="button"
-              onClick={onOpenSetup}
-              className="p-2 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all flex items-center cursor-pointer shadow-2xs"
-              title="Configure"
-            >
-              <Sliders className="w-4 h-4 text-slate-600" />
             </button>
           )}
 

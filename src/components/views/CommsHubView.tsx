@@ -1,75 +1,64 @@
 import React, { useState } from 'react';
 import { 
-  MessageCircle, Send, Mail, MessageSquare, AlertCircle, RefreshCw, QrCode
+  Send, User, Search
 } from 'lucide-react';
-import { VoiceNudge, ParentInquiry, StaffMember, LocalVendor, SetupConfig, BaileysConnectionStatus } from '../../types';
-import { BaileysConnect } from '../BaileysConnect';
+import { VoiceNudge, ParentInquiry, LocalVendor, SetupConfig } from '../../types';
 
 interface CommsHubViewProps {
   nudges: VoiceNudge[];
   onSendNudge: (nudge: VoiceNudge) => void;
   inquiries?: ParentInquiry[];
-  staff?: StaffMember[];
   vendors?: LocalVendor[];
   setupConfig?: SetupConfig | null;
-  baileysStatus?: BaileysConnectionStatus;
-  onConnectBaileys?: () => void;
-  onDisconnectBaileys?: () => void;
 }
-
-type ChatMode = 'whatsapp' | 'team' | 'hq';
 
 export const CommsHubView: React.FC<CommsHubViewProps> = ({
   nudges,
   onSendNudge,
   inquiries = [],
-  staff = [],
   vendors = [],
-  setupConfig,
-  baileysStatus = { status: 'disconnected' },
-  onConnectBaileys = () => {},
-  onDisconnectBaileys = () => {}
+  setupConfig
 }) => {
-  const [chatMode, setChatMode] = useState<ChatMode>('whatsapp');
   const [inputText, setInputText] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // 1. WhatsApp contacts derived dynamically
-  const parentContacts = inquiries.map(i => ({
-    id: `parent-${i.id}`,
-    name: i.parentName,
-    phone: i.phone,
-    subtext: `${i.grade} • ${i.locality}`,
-    defaultDraft: `Namaste ${i.parentName}! Following up from campus. Would you like to schedule a tour?`
-  }));
+  // WhatsApp-style long chat list
+  const threads = [
+    ...inquiries.map(i => ({
+      id: `inq-${i.id}`,
+      name: i.parentName,
+      subtext: `${i.grade} • ${i.locality}`,
+      lastMessage: i.notes || 'Inquiry registered',
+      phone: i.phone,
+      type: 'parent'
+    })),
+    ...vendors.map(v => ({
+      id: `vend-${v.id}`,
+      name: v.name,
+      subtext: v.serviceCategory,
+      lastMessage: v.contactPerson || 'Vendor contract',
+      phone: v.phone,
+      type: 'vendor'
+    }))
+  ];
 
-  const vendorContacts = vendors.map(v => ({
-    id: `vendor-${v.id}`,
-    name: v.name,
-    phone: v.phone,
-    subtext: `${v.serviceCategory}`,
-    defaultDraft: `Namaste! Following up on delivery status for campus.`
-  }));
+  const filteredThreads = threads.filter(t => 
+    !searchQuery.trim() || 
+    t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.subtext.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const allContacts = [...parentContacts, ...vendorContacts];
+  const [activeThreadId, setActiveThreadId] = useState<string>(threads[0]?.id || '');
+  const activeThread = threads.find(t => t.id === activeThreadId) || threads[0] || null;
 
-  const [selectedWhatsAppId, setSelectedWhatsAppId] = useState<string>(allContacts[0]?.id || '');
-  const [customWhatsAppDraft, setCustomWhatsAppDraft] = useState<string>(allContacts[0]?.defaultDraft || '');
-
-  const activeContact = allContacts.find(c => c.id === selectedWhatsAppId) || allContacts[0] || null;
-
-  const handleSelectContact = (contact: typeof allContacts[0]) => {
-    setSelectedWhatsAppId(contact.id);
-    setCustomWhatsAppDraft(contact.defaultDraft);
-  };
-
-  const handleSendNudgeAsMessage = (e: React.FormEvent) => {
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim()) return;
 
     const newNudge: VoiceNudge = {
       id: `nudge-${Date.now()}`,
       from: setupConfig?.leadAcademicsName || 'Director',
-      to: 'Team',
+      to: activeThread ? activeThread.name : 'Team',
       message: inputText.trim(),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       tag: 'Urgent'
@@ -79,199 +68,91 @@ export const CommsHubView: React.FC<CommsHubViewProps> = ({
     setInputText('');
   };
 
-  const handleLaunchWhatsApp = () => {
-    if (!activeContact) return;
-    const cleanPhone = activeContact.phone.replace(/[^0-9]/g, '');
-    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(customWhatsAppDraft)}`;
-    window.open(url, '_blank');
+  const handleOpenWhatsAppDirect = (phone: string, text: string) => {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-3 pb-20 px-1 sm:px-0">
-      
-      {/* 1. Compact Header: 1-2 words */}
-      <div className="flex items-center justify-between pt-1">
-        <div>
-          <h1 className="text-xl font-black text-slate-900 tracking-tight">
-            Comms
-          </h1>
-          <p className="text-[11px] text-slate-500">
-            WhatsApp bridge & team dispatch
-          </p>
-        </div>
-
-        {/* 3 Compact Channel Selectors */}
-        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-2xl">
-          <button
-            type="button"
-            onClick={() => setChatMode('whatsapp')}
-            className={`p-1.5 rounded-xl cursor-pointer transition-all ${
-              chatMode === 'whatsapp' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-            title="WhatsApp"
-          >
-            <MessageCircle className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setChatMode('team')}
-            className={`p-1.5 rounded-xl cursor-pointer transition-all ${
-              chatMode === 'team' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-            title="Team Chat"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setChatMode('hq')}
-            className={`p-1.5 rounded-xl cursor-pointer transition-all ${
-              chatMode === 'hq' ? 'bg-red-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-            title="HQ Dispatches"
-          >
-            <Mail className="w-3.5 h-3.5" />
-          </button>
-        </div>
+    <div className="max-w-md mx-auto space-y-3 pb-24 px-2 pt-1">
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search chats..."
+          className="w-full pl-9 pr-3 py-2 bg-white rounded-2xl border border-slate-200 text-xs focus:outline-hidden focus:border-emerald-500 shadow-2xs font-medium"
+        />
       </div>
 
-      {/* 2. Baileys WhatsApp Connection Manager */}
-      <BaileysConnect
-        status={baileysStatus}
-        onConnect={onConnectBaileys}
-        onDisconnect={onDisconnectBaileys}
-      />
-
-      {/* 3. MODE: WHATSAPP */}
-      {chatMode === 'whatsapp' && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="font-extrabold text-xs text-slate-900">
-              Direct Outreach
-            </h2>
-            <span className="text-[10px] text-slate-400 font-medium">
-              {allContacts.length} contacts
-            </span>
+      {/* WhatsApp chat style list */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs divide-y divide-slate-100 overflow-hidden">
+        {filteredThreads.length === 0 ? (
+          <div className="p-8 text-center text-xs text-slate-400">
+            No active conversations
           </div>
+        ) : (
+          filteredThreads.map((thread) => {
+            const isSelected = thread.id === activeThreadId;
+            return (
+              <div
+                key={thread.id}
+                onClick={() => setActiveThreadId(thread.id)}
+                className={`p-3.5 flex items-center justify-between gap-3 cursor-pointer transition-colors ${
+                  isSelected ? 'bg-emerald-50/60' : 'hover:bg-slate-50'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600 font-black text-xs shrink-0">
+                    {thread.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-extrabold text-xs sm:text-sm text-slate-900 truncate">
+                      {thread.name}
+                    </div>
+                    <div className="text-[11px] text-slate-500 truncate mt-0.5">
+                      {thread.lastMessage}
+                    </div>
+                  </div>
+                </div>
 
-          {allContacts.length === 0 ? (
-            <div className="py-6 text-center text-slate-400 space-y-1">
-              <AlertCircle className="w-6 h-6 mx-auto text-slate-300" />
-              <p className="text-xs font-bold text-slate-600">No contacts</p>
-            </div>
-          ) : (
-            <>
-              {/* Horizontal / Compact contact chips */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-                {allContacts.map((contact) => (
-                  <button
-                    key={contact.id}
-                    type="button"
-                    onClick={() => handleSelectContact(contact)}
-                    className={`px-3 py-1.5 rounded-xl whitespace-nowrap text-left border transition-all cursor-pointer ${
-                      activeContact?.id === contact.id
-                        ? 'bg-emerald-50 border-emerald-400 text-emerald-900 font-bold'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span className="text-xs">{contact.name}</span>
-                  </button>
-                ))}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenWhatsAppDirect(thread.phone, `Hello ${thread.name}, update regarding campus admissions.`);
+                  }}
+                  className="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] shrink-0 cursor-pointer shadow-2xs"
+                >
+                  WhatsApp
+                </button>
               </div>
+            );
+          })
+        )}
+      </div>
 
-              {/* Composer */}
-              {activeContact && (
-                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                  <div className="flex items-center justify-between text-[11px] text-slate-600 font-semibold">
-                    <span>To: {activeContact.name}</span>
-                    <span className="text-slate-400">{activeContact.phone}</span>
-                  </div>
-
-                  <textarea
-                    rows={3}
-                    value={customWhatsAppDraft}
-                    onChange={(e) => setCustomWhatsAppDraft(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 bg-white focus:outline-hidden"
-                  />
-
-                  {/* Compact WhatsApp icon button instead of bulky text button */}
-                  <div className="flex items-center justify-end">
-                    <button
-                      type="button"
-                      onClick={handleLaunchWhatsApp}
-                      className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-all cursor-pointer flex items-center justify-center"
-                      title="Send via WhatsApp"
-                    >
-                      <MessageCircle className="w-4 h-4 fill-white" />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
-
-      {/* 4. MODE: TEAM CHAT */}
-      {chatMode === 'team' && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs overflow-hidden flex flex-col">
-          <div className="p-3.5 bg-slate-900 text-white flex items-center justify-between">
-            <span className="font-extrabold text-xs">Team Channel</span>
-            <span className="text-[10px] text-slate-400">{nudges.length} updates</span>
-          </div>
-
-          <div className="p-3 space-y-2 max-h-72 overflow-y-auto bg-slate-50/50">
-            {nudges.length === 0 ? (
-              <div className="py-6 text-center text-xs text-slate-400">No updates logged</div>
-            ) : (
-              nudges.map((n) => (
-                <div key={n.id} className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
-                    <span className="font-bold text-slate-800">{n.from}</span>
-                    <span>{n.timestamp}</span>
-                  </div>
-                  <p className="text-xs text-slate-700">{n.message}</p>
-                </div>
-              ))
-            )}
-          </div>
-
-          <form onSubmit={handleSendNudgeAsMessage} className="p-2.5 bg-white border-t border-slate-200 flex items-center gap-1.5">
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Team update..."
-              className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
-            />
-            <button
-              type="submit"
-              className="p-2 rounded-xl bg-blue-600 text-white cursor-pointer"
-              title="Send"
-            >
-              <Send className="w-3.5 h-3.5" />
-            </button>
-          </form>
-        </div>
-      )}
-
-      {/* 5. MODE: HQ */}
-      {chatMode === 'hq' && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-4 space-y-2.5">
-          <h2 className="font-extrabold text-xs text-slate-900">
-            Franchise HQ
-          </h2>
-          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1 text-slate-700">
-            <span className="font-bold text-slate-900 block">Licensing Active</span>
-            <p className="text-[11px] text-slate-600">
-              Official curriculum and operational guidance portal synchronized.
-            </p>
-          </div>
-        </div>
-      )}
-
+      {/* Input bar for quick messaging */}
+      <div className="p-3 bg-white rounded-3xl border border-slate-200 shadow-2xs">
+        <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder={activeThread ? `Message ${activeThread.name}...` : 'Type a message...'}
+            className="flex-1 px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:outline-hidden focus:border-emerald-500 font-medium"
+          />
+          <button
+            type="submit"
+            disabled={!inputText.trim()}
+            className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white font-bold cursor-pointer shrink-0 transition-colors"
+          >
+            <Send className="w-3.5 h-3.5" />
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
