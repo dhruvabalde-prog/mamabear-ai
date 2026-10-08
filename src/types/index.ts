@@ -211,6 +211,7 @@ export interface StoryCard {
 export interface BaileysConnectionStatus {
   status: 'disconnected' | 'connecting' | 'qr_ready' | 'connected';
   qrCode?: string;
+  pairingCode?: string;
   phone?: string;
   name?: string;
 }

@@ -19,21 +19,21 @@ export const FacilityView: React.FC<FacilityViewProps> = ({
   const avgProgress = Math.round(zones.reduce((acc, z) => acc + z.progress, 0) / zones.length);
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Subhash Nagar Facility & Renovation
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Facility
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            4-classroom Canadian layout, natural Kota stone mirror-polishing, childproofing & 45°C heat cooling shields.
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+            Subhash Nagar site renovation & childproofing
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs font-bold">
-          <MapPin className="w-4 h-4 text-indigo-600" />
-          <span>Subhash Nagar Main Road (Adjacent to Talwandi Circle)</span>
+        <div className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs font-bold flex items-center gap-1 shrink-0">
+          <MapPin className="w-3.5 h-3.5 text-indigo-600" />
+          <span className="hidden sm:inline">Subhash Nagar</span>
         </div>
       </div>
 

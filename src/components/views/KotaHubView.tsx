@@ -72,25 +72,26 @@ export const KotaHubView: React.FC<KotaHubViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Local Vendors & Regional Intelligence
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Vendors
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Suppliers, climate safeguarding protocols, parent demographic analysis, and municipal services.
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+            Kota local supplies & emergency services
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
+          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer shrink-0"
+          title="Add Supplier"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Local Supplier</span>
+          <span className="hidden sm:inline">Add Supplier</span>
         </button>
       </div>
 

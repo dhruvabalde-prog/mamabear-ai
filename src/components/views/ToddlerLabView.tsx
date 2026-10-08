@@ -72,25 +72,26 @@ export const ToddlerLabView: React.FC<ToddlerLabViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Child-Safety & Quality Review Lab
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Safety
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Child-centered inspections of classroom materials, anti-pinch corners, water tables & daily handoffs.
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+            Childproofing tests & daily handoffs
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setShowAddReview(true)}
-          className="px-4 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
+          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer shrink-0"
+          title="Log Test"
         >
-          <Sparkles className="w-4 h-4 text-amber-300" />
-          <span>Log Safety Test</span>
+          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+          <span className="hidden sm:inline">Log Test</span>
         </button>
       </div>
 

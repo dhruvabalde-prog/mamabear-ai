@@ -265,6 +265,20 @@ Output JSON format:
     }
   });
 
+  app.post('/api/baileys/pair', async (req, res) => {
+    try {
+      const { phone } = req.body;
+      if (!phone) {
+        return res.status(400).json({ error: 'Phone number is required' });
+      }
+      const { baileysManager } = await import('./src/services/baileysService');
+      const pairingCode = await baileysManager.requestPairingCode(phone);
+      res.json({ success: true, pairingCode, ...baileysManager.getStatus() });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.post('/api/baileys/disconnect', async (_req, res) => {
     try {
       const { baileysManager } = await import('./src/services/baileysService');

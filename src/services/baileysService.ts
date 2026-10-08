@@ -43,6 +43,7 @@ class BaileysManager {
   private sock: WASocket | null = null;
   private status: 'disconnected' | 'connecting' | 'qr_ready' | 'connected' = 'disconnected';
   private qrCodeDataUrl: string | null = null;
+  private pairingCode: string | null = null;
   private connectedPhone: string | null = null;
   private connectedName: string | null = null;
   private rawMessages: LiveMessageEvent[] = [];
@@ -59,6 +60,7 @@ class BaileysManager {
     return {
       status: this.status,
       qrCode: this.qrCodeDataUrl,
+      pairingCode: this.pairingCode,
       phone: this.connectedPhone,
       name: this.connectedName,
       messageCount: this.rawMessages.length,
@@ -72,6 +74,28 @@ class BaileysManager {
 
   public getRawMessages(): LiveMessageEvent[] {
     return this.rawMessages.slice(-50);
+  }
+
+  public async requestPairingCode(phoneNumber: string): Promise<string | null> {
+    const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
+    if (!cleanPhone) throw new Error('Valid phone number required');
+
+    // Ensure socket is initialized with multi-file auth
+    if (!this.sock) {
+      await this.connect();
+    }
+
+    if (this.sock && this.status !== 'connected') {
+      try {
+        const code = await this.sock.requestPairingCode(cleanPhone);
+        this.pairingCode = code;
+        return code;
+      } catch (err: any) {
+        console.error('Failed to request pairing code:', err);
+        throw err;
+      }
+    }
+    return this.pairingCode;
   }
 
   public async connect(): Promise<void> {
@@ -109,6 +133,7 @@ class BaileysManager {
             (lastDisconnect?.error as any)?.output?.statusCode !== DisconnectReason.loggedOut;
           this.status = 'disconnected';
           this.qrCodeDataUrl = null;
+          this.pairingCode = null;
           this.connectedPhone = null;
           this.connectedName = null;
           this.sock = null;
@@ -119,6 +144,7 @@ class BaileysManager {
         } else if (connection === 'open') {
           this.status = 'connected';
           this.qrCodeDataUrl = null;
+          this.pairingCode = null;
           this.connectedPhone = this.sock?.user?.id?.split(':')[0] || 'Connected User';
           this.connectedName = this.sock?.user?.name || 'WhatsApp Session';
           console.log('Baileys WhatsApp connected successfully as:', this.connectedPhone);

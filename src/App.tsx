@@ -34,6 +34,7 @@ import { MamaBearView } from './components/views/MamaBearView';
 import { CommsHubView } from './components/views/CommsHubView';
 import { SchoolHubView } from './components/views/SchoolHubView';
 import { GoogleSettingsView } from './components/views/GoogleSettingsView';
+import { StoryCardsPageView } from './components/views/StoryCardsPageView';
 
 export default function App() {
   // Navigation: 5 core tabs ('dashboard', 'tasks', 'mamabear', 'comms', 'school')
@@ -43,6 +44,7 @@ export default function App() {
   const [viewingTask, setViewingTask] = useState<TaskItem | null>(null);
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
+  const [showStoryCardsPage, setShowStoryCardsPage] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
 
   // Baileys WhatsApp & Executive Operations Story Cards State
@@ -333,6 +335,7 @@ export default function App() {
           setViewingTask(null);
           setShowGooglePortal(false);
           setShowSetupModal(false);
+          setShowStoryCardsPage(false);
           setCurrentTab(tab);
         }}
         googleUser={googleUser}
@@ -342,12 +345,20 @@ export default function App() {
         onOpenGoogleSettings={() => {
           setViewingTask(null);
           setShowSetupModal(false);
+          setShowStoryCardsPage(false);
           setShowGooglePortal(true);
         }}
         onOpenSetup={() => {
           setViewingTask(null);
           setShowGooglePortal(false);
+          setShowStoryCardsPage(false);
           setShowSetupModal(true);
+        }}
+        onOpenStoryCards={() => {
+          setViewingTask(null);
+          setShowGooglePortal(false);
+          setShowSetupModal(false);
+          setShowStoryCardsPage(true);
         }}
         onAuthSuccess={(user, token) => {
           setGoogleUser(user);
@@ -358,6 +369,16 @@ export default function App() {
           setHasGoogleToken(false);
         }}
       />
+
+      {/* Unique Executive Story Cards Screen */}
+      {showStoryCardsPage && (
+        <StoryCardsPageView
+          cards={storyCards}
+          onApproveAction={handleApproveStoryCard}
+          onDismiss={handleDismissStoryCard}
+          onClose={() => setShowStoryCardsPage(false)}
+        />
+      )}
 
       {/* Main View Area */}
       <main className="flex-1 w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-6">

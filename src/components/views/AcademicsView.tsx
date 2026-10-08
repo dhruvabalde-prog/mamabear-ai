@@ -62,21 +62,21 @@ export const AcademicsView: React.FC<AcademicsViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Maple Bear Canadian Curriculum
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Curriculum
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Global Canadian inquiry-based early childhood pedagogy with bilingual immersion & learning centers.
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+            Canadian inquiry early years framework
           </p>
         </div>
 
-        <span className="px-3.5 py-1.5 rounded-2xl bg-rose-50 text-rose-800 border border-rose-200 text-xs font-bold self-start sm:self-auto flex items-center gap-1.5">
+        <span className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-xs font-bold flex items-center gap-1 shrink-0">
           <span>🍁</span>
-          Certified Canadian ECE Framework
+          <span className="hidden sm:inline">Canadian ECE</span>
         </span>
       </div>
 

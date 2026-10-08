@@ -81,25 +81,26 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Financial Ledger & Fee Economics
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Finance
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Capex disbursements, fee modeling, and launch break-even projections.
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+            Capex ledger & break-even model
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
+          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer shrink-0"
+          title="Add Expense"
         >
           <Plus className="w-4 h-4" />
-          <span>Record Expense</span>
+          <span className="hidden sm:inline">Add Expense</span>
         </button>
       </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  MapPin, Mail, Settings, User as UserIcon, LogOut, Sliders
+  MapPin, Mail, Settings, User as UserIcon, LogOut, Sliders, Sparkles
 } from 'lucide-react';
 import { User } from 'firebase/auth';
 import { SetupConfig } from '../types';
@@ -14,6 +14,7 @@ interface NavbarProps {
   setupConfig?: SetupConfig | null;
   onOpenGoogleSettings: () => void;
   onOpenSetup?: () => void;
+  onOpenStoryCards?: () => void;
   onAuthSuccess: (user: User, token: string | null) => void;
   onAuthLogout: () => void;
 }
@@ -27,6 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   setupConfig,
   onOpenGoogleSettings,
   onOpenSetup,
+  onOpenStoryCards,
   onAuthSuccess,
   onAuthLogout
 }) => {
@@ -59,9 +61,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </button>
 
-        {/* Right Side: Setup & Auth Status */}
+        {/* Right Side: Stories, Setup & Auth Status */}
         <div className="flex items-center gap-1.5">
           
+          {/* Executive Story Cards Symbol Button */}
+          {onOpenStoryCards && (
+            <button
+              type="button"
+              onClick={onOpenStoryCards}
+              className="p-2 rounded-2xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 transition-all flex items-center cursor-pointer shadow-2xs relative"
+              title="Stories"
+            >
+              <Sparkles className="w-4 h-4 text-rose-600" />
+              <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-1 right-1 animate-pulse" />
+            </button>
+          )}
+
           {/* Setup / Configuration Button */}
           {onOpenSetup && (
             <button
