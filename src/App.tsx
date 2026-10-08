@@ -12,7 +12,7 @@ import {
   DEFAULT_SETUP_CONFIG,
   getCoFounders
 } from './data/initialData';
-import { TaskItem, VoiceNudge, ParentInquiry, FacilityZone, SetupConfig } from './types';
+import { TaskItem, VoiceNudge, ParentInquiry, FacilityZone, SetupConfig, StoryCard, BaileysConnectionStatus } from './types';
 import { 
   fetchInitialDataFromSupabase, 
   syncTaskToSupabase, 
@@ -44,6 +44,10 @@ export default function App() {
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
+
+  // Baileys WhatsApp & Executive Operations Story Cards State
+  const [baileysStatus, setBaileysStatus] = useState<BaileysConnectionStatus>({ status: 'disconnected' });
+  const [storyCards, setStoryCards] = useState<StoryCard[]>([]);
 
   // Setup / School Configuration State
   const [setupConfig, setSetupConfig] = useState<SetupConfig | null>(() => {
@@ -80,6 +84,90 @@ export default function App() {
   // Google Workspace Auth State
   const [googleUser, setGoogleUser] = useState<User | null>(null);
   const [hasGoogleToken, setHasGoogleToken] = useState<boolean>(false);
+
+  // Poll / Fetch Baileys status and Story Cards
+  useEffect(() => {
+    const fetchBaileys = async () => {
+      try {
+        const [statusRes, cardsRes] = await Promise.all([
+          fetch('/api/baileys/status').catch(() => null),
+          fetch('/api/baileys/cards').catch(() => null)
+        ]);
+        if (statusRes && statusRes.ok) {
+          const sData = await statusRes.json();
+          setBaileysStatus(sData);
+        }
+        if (cardsRes && cardsRes.ok) {
+          const cData = await cardsRes.json();
+          if (cData.story_cards && Array.isArray(cData.story_cards)) {
+            setStoryCards(cData.story_cards);
+          }
+        }
+      } catch (err) {
+        // silent fallback
+      }
+    };
+
+    fetchBaileys();
+    const interval = setInterval(fetchBaileys, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleConnectBaileys = async () => {
+    try {
+      const res = await fetch('/api/baileys/connect', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setBaileysStatus(data);
+      }
+    } catch (err) {
+      console.error('Failed to trigger Baileys connect', err);
+    }
+  };
+
+  const handleDisconnectBaileys = async () => {
+    try {
+      const res = await fetch('/api/baileys/disconnect', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setBaileysStatus(data);
+      }
+    } catch (err) {
+      console.error('Failed to trigger Baileys disconnect', err);
+    }
+  };
+
+  const handleApproveStoryCard = async (card: StoryCard) => {
+    try {
+      if (card.pre_drafted_action.reply_text) {
+        await fetch('/api/baileys/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chatId: card.chat_id,
+            text: card.pre_drafted_action.reply_text,
+            cardId: card.card_id
+          })
+        });
+      }
+      setStoryCards(prev => prev.filter(c => c.card_id !== card.card_id));
+    } catch (err) {
+      console.error('Failed to dispatch story card action', err);
+    }
+  };
+
+  const handleDismissStoryCard = async (cardId: string) => {
+    try {
+      await fetch('/api/baileys/dismiss', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cardId })
+      });
+      setStoryCards(prev => prev.filter(c => c.card_id !== cardId));
+    } catch (err) {
+      console.error('Failed to dismiss card', err);
+    }
+  };
 
   // Fetch initial state from Supabase
   useEffect(() => {
@@ -308,6 +396,12 @@ export default function App() {
               <DashboardView
                 tasks={tasks}
                 setupConfig={setupConfig}
+                storyCards={storyCards}
+                baileysStatus={baileysStatus}
+                onConnectBaileys={handleConnectBaileys}
+                onDisconnectBaileys={handleDisconnectBaileys}
+                onApproveStoryCard={handleApproveStoryCard}
+                onDismissStoryCard={handleDismissStoryCard}
                 onOpenTaskModal={handleOpenTaskDetail}
                 onToggleTask={handleToggleTaskStatus}
                 onNavigateTab={(tab) => {
@@ -346,6 +440,9 @@ export default function App() {
                 staff={staff}
                 vendors={vendors}
                 setupConfig={setupConfig}
+                baileysStatus={baileysStatus}
+                onConnectBaileys={handleConnectBaileys}
+                onDisconnectBaileys={handleDisconnectBaileys}
               />
             )}
 

@@ -175,29 +175,27 @@ When would be a convenient time for you to visit this week?`;
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-28">
+    <div className="max-w-4xl mx-auto space-y-4 pb-28">
       {/* Header */}
-      <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-2xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
-              Parent Relationship CRM
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Admissions & WhatsApp Pipeline
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Admissions
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
-              Allen & Resonance faculties, New Medical College doctors, and Subhash Nagar local families. Tap any parent to reply directly on WhatsApp.
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+              Parent pipeline & instant WhatsApp dispatch
             </p>
           </div>
 
           <button
             type="button"
             onClick={() => setShowNewModal(true)}
-            className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
+            className="p-2 sm:px-3 sm:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer shrink-0"
+            title="Add Parent"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Parent Inquiry</span>
+            <span className="hidden sm:inline">Add Parent</span>
           </button>
         </div>
 
@@ -338,14 +336,15 @@ When would be a convenient time for you to visit this week?`;
             {/* ACTION ROW: Prominent WhatsApp Reply Button + Call + Calendar Tour */}
             <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5">
               
-              {/* PRIMARY ACTION: Direct WhatsApp Reply */}
+              {/* PRIMARY ACTION: Mobile-first WhatsApp icon button */}
               <button
                 type="button"
                 onClick={() => handleOpenWhatsApp(inq)}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                className="p-2 sm:px-3 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                title="Chat on WhatsApp"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Reply on WhatsApp</span>
+                <span className="hidden sm:inline">WhatsApp</span>
               </button>
 
               <div className="flex items-center gap-2">

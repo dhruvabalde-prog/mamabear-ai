@@ -191,4 +191,28 @@ export interface DailyHandoff {
   statusNote?: string;
 }
 
+export interface StoryCard {
+  card_id: string;
+  chat_id: string;
+  contact_name: string;
+  category: 'UNANSWERED_PING' | 'FOLLOW_UP_NEEDED' | 'TASK_COMMITMENT' | 'PLANNING' | 'REMINDER' | 'URGENT_TRIAGE';
+  urgency: 'critical' | 'medium' | 'low';
+  headline: string;
+  context_summary: string;
+  ai_proposal: string;
+  pre_drafted_action: {
+    action_type: 'SEND_WHATSAPP_REPLY' | 'CREATE_CALENDAR_EVENT' | 'SET_REMINDER' | 'DISMISS';
+    reply_text: string | null;
+    action_payload: Record<string, any>;
+  };
+  suggested_background_theme: 'dark-crimson' | 'deep-blue' | 'emerald' | 'amber' | 'charcoal';
+}
+
+export interface BaileysConnectionStatus {
+  status: 'disconnected' | 'connecting' | 'qr_ready' | 'connected';
+  qrCode?: string;
+  phone?: string;
+  name?: string;
+}
+
 

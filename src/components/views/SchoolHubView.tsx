@@ -246,35 +246,22 @@ export const SchoolHubView: React.FC<SchoolHubViewProps> = ({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-28">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4 py-3 sm:py-6 pb-28">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 rounded-3xl p-5 sm:p-8 text-white shadow-lg mb-6 sm:mb-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-xs px-3 py-1 rounded-full text-xs font-semibold mb-3">
-            <Building2 className="w-3.5 h-3.5" />
-            <span>Subhash Nagar, Kota Franchise Command</span>
-          </div>
-          <h1 className="text-xl sm:text-3xl font-black tracking-tight mb-2">
-            School Operations Hub
-          </h1>
-          <p className="text-red-50 text-xs sm:text-sm leading-relaxed">
-            All departments housed with simplicity and clarity. Tap any department to open its full workspace — no popups or cramped cards.
-          </p>
-        </div>
-
-        <div className="mt-5 sm:mt-6 flex flex-wrap gap-2 sm:gap-3 text-xs">
-          <div className="bg-black/20 backdrop-blur-xs px-3 py-1.5 rounded-lg flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>Signing Amount: ₹15L Paid</span>
-          </div>
-          <div className="bg-black/20 backdrop-blur-xs px-3 py-1.5 rounded-lg flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
-            <span>Launch Target: 60 Days</span>
-          </div>
-          <div className="bg-black/20 backdrop-blur-xs px-3 py-1.5 rounded-lg flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-purple-400"></span>
-            <span>Moms of Aarav & Myra (3yo)</span>
+      <div className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 rounded-3xl p-4 sm:p-6 text-white shadow-md mb-4 sm:mb-6 relative overflow-hidden">
+        <div className="relative z-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl sm:text-3xl font-black tracking-tight">
+                School
+              </h1>
+              <p className="text-red-100 text-xs mt-0.5">
+                Subhash Nagar franchise workspace
+              </p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-xs px-2.5 py-1 rounded-xl text-[11px] font-bold">
+              ₹15L Paid • 60 Days
+            </div>
           </div>
         </div>
       </div>

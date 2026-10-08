@@ -98,27 +98,27 @@ ${task.executionPlan?.summary ? `• Plan: ${task.executionPlan.summary}` : ''}`
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-5 pb-28">
+    <div className="max-w-4xl mx-auto space-y-4 pb-28">
       
       {/* Header Stat & Search Card */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Master Launch Deliverables ({totalCount})
+              Tasks
             </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Shared command center for Priya & Ananya • Reassign tasks to yourself or co-founder in 1 tap.
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+              Launch roadmap & co-founder deliverables ({totalCount})
             </p>
           </div>
 
           {/* Counts */}
-          <div className="flex items-center gap-2 text-xs">
-            <span className="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-800 font-extrabold border border-emerald-200">
+          <div className="flex items-center gap-1.5 text-xs shrink-0">
+            <span className="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 font-extrabold border border-emerald-200 text-[11px]">
               {completedCount} Done
             </span>
-            <span className="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-800 font-extrabold border border-indigo-200">
-              {inProgressCount} In Progress
+            <span className="px-2.5 py-1 rounded-xl bg-indigo-50 text-indigo-800 font-extrabold border border-indigo-200 text-[11px]">
+              {inProgressCount} Active
             </span>
           </div>
         </div>

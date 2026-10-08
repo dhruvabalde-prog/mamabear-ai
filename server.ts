@@ -245,6 +245,85 @@ Output JSON format:
     }
   });
 
+  // Baileys WhatsApp & Executive Story Cards Endpoints
+  app.get('/api/baileys/status', async (_req, res) => {
+    try {
+      const { baileysManager } = await import('./src/services/baileysService');
+      res.json(baileysManager.getStatus());
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/baileys/connect', async (_req, res) => {
+    try {
+      const { baileysManager } = await import('./src/services/baileysService');
+      await baileysManager.connect();
+      res.json({ success: true, ...baileysManager.getStatus() });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/baileys/disconnect', async (_req, res) => {
+    try {
+      const { baileysManager } = await import('./src/services/baileysService');
+      await baileysManager.disconnect();
+      res.json({ success: true, ...baileysManager.getStatus() });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get('/api/baileys/cards', async (_req, res) => {
+    try {
+      const { baileysManager } = await import('./src/services/baileysService');
+      res.json({ story_cards: baileysManager.getStoryCards() });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/baileys/send', async (req, res) => {
+    try {
+      const { chatId, text, cardId } = req.body;
+      const { baileysManager } = await import('./src/services/baileysService');
+      const sent = await baileysManager.sendReply(chatId, text);
+      if (sent && cardId) {
+        baileysManager.dismissCard(cardId);
+      }
+      res.json({ success: sent });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/baileys/dismiss', async (req, res) => {
+    try {
+      const { cardId } = req.body;
+      const { baileysManager } = await import('./src/services/baileysService');
+      baileysManager.dismissCard(cardId);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/baileys/synthesize-stream', async (req, res) => {
+    try {
+      const { messages } = req.body;
+      const { baileysManager } = await import('./src/services/baileysService');
+      if (Array.isArray(messages)) {
+        for (const msg of messages) {
+          (baileysManager as any).synthesizeStreamIntoStoryCard(msg);
+        }
+      }
+      res.json({ story_cards: baileysManager.getStoryCards() });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   // Vite middleware in dev or static files in prod
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'dist')));
