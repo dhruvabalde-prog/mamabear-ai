@@ -40,6 +40,8 @@ import { GoogleSettingsView } from './components/views/GoogleSettingsView';
 import { WhatsAppPairingPageView } from './components/views/WhatsAppPairingPageView';
 import { StoryCardsPageView } from './components/views/StoryCardsPageView';
 import { ConnectedAppsView } from './components/views/ConnectedAppsView';
+import { LibraryView } from './components/views/LibraryView';
+import { ScheduleAutomationsView } from './components/views/ScheduleAutomationsView';
 import { AdminPanelModal } from './components/AdminPanelModal';
 
 export default function App() {
@@ -51,6 +53,8 @@ export default function App() {
   const [showGooglePortal, setShowGooglePortal] = useState<boolean>(false);
   const [showWhatsAppPairing, setShowWhatsAppPairing] = useState<boolean>(false);
   const [showConnectedApps, setShowConnectedApps] = useState<boolean>(false);
+  const [showLibrary, setShowLibrary] = useState<boolean>(false);
+  const [showScheduled, setShowScheduled] = useState<boolean>(false);
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
   const [showStoryCardsPage, setShowStoryCardsPage] = useState<boolean>(false);
   const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
@@ -329,7 +333,7 @@ export default function App() {
   };
 
   // Determine current page title (1-2 words)
-  const isSpecialPage = showGooglePortal || showWhatsAppPairing || showConnectedApps || viewingTask;
+  const isSpecialPage = showGooglePortal || showWhatsAppPairing || showConnectedApps || showLibrary || showScheduled || viewingTask;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col antialiased selection:bg-rose-100 selection:text-rose-900 font-sans pb-20">
@@ -358,8 +362,12 @@ export default function App() {
         isOpen={showDrawer}
         onClose={() => setShowDrawer(false)}
         onNewChat={handleNewChat}
-        onOpenScheduled={() => setCurrentTab('tasks')}
-        onOpenLibrary={() => setCurrentTab('tasks')}
+        onOpenScheduled={() => {
+          setShowScheduled(true);
+        }}
+        onOpenLibrary={() => {
+          setShowLibrary(true);
+        }}
         onOpenConnectedApps={() => {
           setShowConnectedApps(true);
         }}
@@ -383,7 +391,17 @@ export default function App() {
 
       {/* Main View Area */}
       <main className="flex-1 w-full mx-auto">
-        {showConnectedApps ? (
+        {showLibrary ? (
+          <LibraryView
+            onBack={() => setShowLibrary(false)}
+            tasks={tasks}
+            inquiries={inquiries}
+          />
+        ) : showScheduled ? (
+          <ScheduleAutomationsView
+            onBack={() => setShowScheduled(false)}
+          />
+        ) : showConnectedApps ? (
           <ConnectedAppsView
             onBack={() => setShowConnectedApps(false)}
             user={googleUser}
@@ -508,6 +526,8 @@ export default function App() {
             setShowGooglePortal(false);
             setShowWhatsAppPairing(false);
             setShowConnectedApps(false);
+            setShowLibrary(false);
+            setShowScheduled(false);
             setCurrentTab(tab);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}

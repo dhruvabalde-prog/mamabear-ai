@@ -263,7 +263,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   required
                   value={formData.item}
                   onChange={(e) => setFormData({ ...formData, item: e.target.value })}
-                  placeholder="e.g. Non-slip floor polish materials"
+                  placeholder="Expense description"
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium"
                 />
               </div>

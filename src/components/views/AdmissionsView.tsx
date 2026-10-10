@@ -525,7 +525,7 @@ When would be a convenient time for you to visit this week?`;
                   <label className="font-bold text-slate-700 block mb-1">Child Age</label>
                   <input
                     type="text"
-                    placeholder="e.g. 2.5 yrs or 3 yrs"
+                    placeholder="Age (e.g. 3)"
                     value={formData.childAge}
                     onChange={(e) => setFormData({ ...formData, childAge: e.target.value })}
                     className="w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500"
@@ -567,7 +567,7 @@ When would be a convenient time for you to visit this week?`;
                 <label className="font-bold text-slate-700 block mb-1">Notes / Preferences</label>
                 <textarea
                   rows={2}
-                  placeholder="e.g. Inquired about afternoon daycare and finger safety guards..."
+                  placeholder="Inquiry notes and preferences..."
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs"

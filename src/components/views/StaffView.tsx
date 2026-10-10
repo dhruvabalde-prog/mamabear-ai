@@ -278,7 +278,7 @@ export const StaffView: React.FC<StaffViewProps> = ({
                     required
                     value={formData.contact}
                     onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                    placeholder="+91..."
+                    placeholder="Contact phone number"
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium"
                   />
                 </div>

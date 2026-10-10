@@ -184,7 +184,7 @@ export const AcademicsView: React.FC<AcademicsViewProps> = ({
                 type="text"
                 value={newCenterInput}
                 onChange={(e) => setNewCenterInput(e.target.value)}
-                placeholder="e.g. Loose Parts Natural Wood Station"
+                placeholder="Learning center name (e.g. Reading Corner)"
                 className="flex-1 p-2 bg-white rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-rose-500 font-medium"
               />
               <button
